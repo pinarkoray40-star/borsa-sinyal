@@ -1,0 +1,62 @@
+{
+  "Sinyal (RSI+MACD+SMA)": {
+    "toplam_getiri_%": -6.4,
+    "yillik_%": -0.6,
+    "max_dusus_%": -85.2,
+    "40g_medyan_%": 0.1,
+    "40g_hedefi_tutan_%": 6.1,
+    "40g_-10_alti_%": 16.5,
+    "40g_en_kotu_%": -44.0,
+    "40g_en_iyi_%": 51.3
+  },
+  "Momentum": {
+    "toplam_getiri_%": -81.3,
+    "yillik_%": -13.1,
+    "max_dusus_%": -87.7,
+    "40g_medyan_%": 0.0,
+    "40g_hedefi_tutan_%": 15.1,
+    "40g_-10_alti_%": 27.3,
+    "40g_en_kotu_%": -78.5,
+    "40g_en_iyi_%": 84.5
+  },
+  "Momentum + trend filtresi": {
+    "toplam_getiri_%": 110.7,
+    "yillik_%": 6.4,
+    "max_dusus_%": -87.7,
+    "40g_medyan_%": 0.0,
+    "40g_hedefi_tutan_%": 16.7,
+    "40g_-10_alti_%": 25.8,
+    "40g_en_kotu_%": -61.4,
+    "40g_en_iyi_%": 144.3
+  },
+  "Tüm hisseler eşit ağırlık (kıyas)": {
+    "toplam_getiri_%": 9447.6,
+    "yillik_%": 46.5,
+    "max_dusus_%": -45.0,
+    "40g_medyan_%": 3.5,
+    "40g_hedefi_tutan_%": 11.4,
+    "40g_-10_alti_%": 4.3,
+    "40g_en_kotu_%": -39.4,
+    "40g_en_iyi_%": 65.2
+  },
+  "BIST 100 endeksi (kıyas)": {
+    "toplam_getiri_%": 1200.9,
+    "yillik_%": 24.0,
+    "max_dusus_%": -31.8,
+    "40g_medyan_%": 1.9,
+    "40g_hedefi_tutan_%": 5.4,
+    "40g_-10_alti_%": 5.4,
+    "40g_en_kotu_%": -29.8,
+    "40g_en_iyi_%": 41.7
+  },
+  "Dolar/TL (kıyas)": {
+    "toplam_getiri_%": 2031.5,
+    "yillik_%": 29.2,
+    "max_dusus_%": -34.9,
+    "40g_medyan_%": 2.1,
+    "40g_hedefi_tutan_%": 2.6,
+    "40g_-10_alti_%": 0.9,
+    "40g_en_kotu_%": -18.3,
+    "40g_en_iyi_%": 70.7
+  }
+}
