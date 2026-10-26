@@ -14,3 +14,4 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python tavan.py --period 5y
+      - run: python tavan_getiri.py --period 5y
