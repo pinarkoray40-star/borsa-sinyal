@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  tani:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -15,7 +15,16 @@ jobs:
           python-version: "3.11"
 
       - name: Paketleri kur
-        run: pip install borsapy pandas
+        run: pip install borsapy pandas numpy
 
-      - name: Tani calistir
-        run: python tani.py
+      - name: Bedelsiz testi calistir
+        run: python bedelsiz_test.py
+
+      - name: Sonuclari sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bedelsiz-sonuc
+          path: |
+            bedelsiz_olaylar.csv
+            bedelsiz_rapor.txt
