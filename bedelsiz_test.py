@@ -9,14 +9,18 @@ Olay tarihi = bedelsiz hakkinin islem gordugu tarih.
 
 Cikti: bedelsiz_olaylar.csv ve bedelsiz_rapor.txt
 """
+import functools
+import os
 import sys
 import time
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import TimeoutError as ZamanAsimi
 
 import numpy as np
 import pandas as pd
 
+print = functools.partial(print, flush=True)  # loglar aninda gorunsun
 warnings.filterwarnings("ignore")
 
 try:
@@ -27,8 +31,14 @@ except ImportError:
 # (baslangic, bitis) -> olaydan kac islem gunu once
 PENCERELER = [(60, 40), (40, 20), (20, 1)]
 MIN_BEDELSIZ = 20.0  # en az %20 bedelsiz
-ISCI = 6
+ISCI = 4
 ERKEN_DUR = 60  # bu kadar hissede hic olay yoksa dur
+SURE_LIMITI = 20 * 60  # saniye; dolunca eldeki sonucla rapor yaz
+
+
+def bitir(kod):
+    sys.stdout.flush()
+    os._exit(kod)  # takilan is parcaciklarini beklemeden kapat
 
 
 def hisse_listesi():
@@ -95,6 +105,15 @@ def bedelsiz_serisi(t):
 
 
 def isle(kod, xu):
+    t0 = time.time()
+    sonuc = isle_ic(kod, xu)
+    sure = time.time() - t0
+    if sure > 20:
+        print(f"  yavas: {kod} {sure:.0f} sn")
+    return sonuc
+
+
+def isle_ic(kod, xu):
     hata = None
     for deneme in range(3):
         try:
@@ -136,36 +155,43 @@ def main():
     hisseler = hisse_listesi()
     print("Endeks fiyatlari aliniyor...")
     xu = kapanis(bp.Index("XU100").history(period="max"))
+    print(f"Endeks hazir ({len(xu)} gun). {len(hisseler)} hisse taranacak.")
 
     olaylar, baz, hatalar = [], [], []
     islenen = 0
     ex = ThreadPoolExecutor(max_workers=ISCI)
     isler = [ex.submit(isle, k, xu) for k in hisseler]
-    for fut in as_completed(isler):
-        kod, ol, bz, hata = fut.result()
-        islenen += 1
-        olaylar += ol
-        baz += bz
-        if hata:
-            hatalar.append((kod, hata))
-        if islenen % 50 == 0:
-            print(f"  {islenen}/{len(hisseler)} hisse, {len(olaylar)} olay, {len(hatalar)} hata")
-        if islenen >= ERKEN_DUR and not olaylar:
-            ex.shutdown(wait=False, cancel_futures=True)
-            print("Ilk hisselerde hic olay yok, duruyorum. Ornek hatalar:", hatalar[:5])
-            sys.exit(1)
-    ex.shutdown()
+    sure_doldu = False
+    try:
+        for fut in as_completed(isler, timeout=SURE_LIMITI):
+            kod, ol, bz, hata = fut.result()
+            islenen += 1
+            olaylar += ol
+            baz += bz
+            if hata:
+                hatalar.append((kod, hata))
+            if islenen % 10 == 0:
+                print(f"  {islenen}/{len(hisseler)} hisse, {len(olaylar)} olay, {len(hatalar)} hata")
+            if islenen >= ERKEN_DUR and not olaylar:
+                print("Ilk hisselerde hic olay yok, duruyorum. Ornek hatalar:", hatalar[:5])
+                bitir(1)
+    except ZamanAsimi:
+        sure_doldu = True
+        print(f"SURE LIMITI DOLDU: {islenen}/{len(hisseler)} hisse tamamlandi, eldeki sonucla rapor yaziliyor")
+    ex.shutdown(wait=False, cancel_futures=True)
 
     if hatalar:
         print(f"{len(hatalar)} hissede hata, ornek:", hatalar[:5])
     if not olaylar:
-        sys.exit("Hic olay bulunamadi.")
+        print("Hic olay bulunamadi.")
+        bitir(1)
 
     df = pd.DataFrame(olaylar).sort_values(["hisse", "tarih"])
     df.to_csv("bedelsiz_olaylar.csv", index=False)
     baz = np.array(baz)
 
-    satirlar = [f"Olay sayisi: {len(df)}  (hisse: {df.hisse.nunique()})",
+    satirlar = [f"Taranan hisse: {islenen}/{len(hisseler)}" + (" (sure doldu)" if sure_doldu else ""),
+                f"Olay sayisi: {len(df)}  (hisse: {df.hisse.nunique()})",
                 f"Tarih araligi: {df.tarih.min()} -> {df.tarih.max()}", ""]
     satirlar.append("Olaydan ONCEKI donemlerde endekse gore fazla getiri (ortanca / ortalama / pozitif orani)")
     for bas, bit in PENCERELER:
@@ -190,6 +216,7 @@ def main():
     print("\n" + rapor)
     with open("bedelsiz_rapor.txt", "w", encoding="utf-8") as f:
         f.write(rapor + "\n")
+    bitir(0)
 
 
 if __name__ == "__main__":
