@@ -17,14 +17,14 @@ jobs:
       - name: Paketleri kur
         run: pip install borsapy pandas numpy
 
-      - name: Bedelsiz testi calistir
-        run: python bedelsiz_test.py
+      - name: Birlesim testi calistir
+        run: python birlesim.py
 
       - name: Sonuclari sakla
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: bedelsiz-sonuc
+          name: birlesim-sonuc
           path: |
-            bedelsiz_olaylar.csv
-            bedelsiz_rapor.txt
+            birlesim_satirlar.csv
+            birlesim_rapor.txt
