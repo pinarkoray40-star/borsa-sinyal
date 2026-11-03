@@ -30,9 +30,9 @@ MIN_BEDELSIZ = 20.0   # en az %20 bedelsiz
 GIRIS = 20            # olaydan kac islem gunu once girilir
 BASLANGIC = 120       # faktorler icin gereken gecmis gun
 ADIM = 10             # bedelsiz olmayan donemlerde ornekleme adimi
-ISCI = 4
+ISCI = 6
 ERKEN_DUR = 60
-SURE_LIMITI = 20 * 60  # saniye
+SURE_LIMITI = 150 * 60  # saniye
 
 
 def bitir(kod):
