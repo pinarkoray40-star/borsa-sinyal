@@ -1,21 +1,14 @@
 """
 hacim_backtest_c.py
-Dar aralık (B) sinyalini göreceli güç ve momentum filtreleriyle test eder.
+Dar aralık (B) sinyalini farklı bant eşikleriyle test eder.
 
-Temel sinyal (B): son 15 günde fiyat bandı <= BANT VE son 5 günün hacmi,
+Sinyal (B): son 15 günde fiyat bandı <= BANT VE son 5 günün hacmi,
 önceki 20 günün ortalamasının en az HACIM katı.
 
-Filtreler (temel sinyalin üstüne eklenir):
-  guc   : son 20 günde hisse, BIST 100'den daha çok artmış (göreceli güç > 0)
-  mom   : son 60 günde hisse artıda (yükseliş eğilimi)
-  ikisi : ikisi birden
-
-Bant eşikleri: %3, %5, %8 (dar aralık). Hacim eşikleri: 1.5 ve 2.
-Alış: sinyalden sonraki günün kapanışı. Çıkış: 10 ve 20 işlem günü sonra.
+Bant eşikleri: %3, %4, %5. Hacim eşiği: 1.5. Filtre yok.
+Alış: sinyalden sonraki günün kapanışı. Çıkış: 5, 10 ve 20 işlem günü sonra.
 Maliyet: gidiş-dönüş %0.4. Aynı hissede sinyal sonrası 10 gün yeni sinyal yok.
 Verinin ilk ve ikinci yarısı ayrı ayrı gösterilir (dayanıklılık kontrolü).
-
-BIST 100 verisi alınamazsa göreceli güç varyantları boş çıkar, uyarı yazılır.
 
 Kullanım: python hacim_backtest_c.py [HISSE ...]
 Gereken: pip install borsapy pandas numpy
@@ -25,12 +18,12 @@ import numpy as np
 import pandas as pd
 import borsapy as bp
 
-UFUKLAR = [10, 20]
+UFUKLAR = [5, 10, 20]
 MALIYET = 0.004
 COOLDOWN = 10
-BANTLAR = [0.03, 0.05, 0.08]
-HACIMLER = [1.5, 2.0]
-FILTRELER = ["yok", "guc", "mom", "ikisi"]
+BANTLAR = [0.03, 0.04, 0.05]
+HACIMLER = [1.5]
+FILTRELER = ["yok"]
 
 
 def kolon_bul(df, ad):
