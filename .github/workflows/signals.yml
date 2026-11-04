@@ -5,6 +5,9 @@ on:
     - cron: "*/15 7-15 * * 1-5"
   push:
     branches: [main]
+  workflow_run:
+    workflows: ["Takip defteri"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -32,6 +35,7 @@ jobs:
           python signals.py --out _site/signals.json
           cp index.html backtest.html _site/
           if [ -f backtest.json ]; then cp backtest.json _site/; fi
+          if [ -d takip ]; then cp -r takip _site/takip; fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
