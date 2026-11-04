@@ -93,6 +93,7 @@
     <button role="tab" id="t-sig" aria-selected="false">Sinyaller</button>
     <button role="tab" id="t-perf" aria-selected="false">Performans</button>
     <button role="tab" id="t-takip" aria-selected="false">Takip</button>
+    <button role="tab" id="t-htakip" aria-selected="false">Hacim takip</button>
   </div>
 
   <section id="p-dip">
@@ -149,6 +150,13 @@
     <div id="tstats"></div>
     <div id="tlist"></div>
     <div class="msg" id="tmsg">Yükleniyor…</div>
+  </section>
+
+  <section id="p-htakip" hidden>
+    <p class="lead">Dar aralık sinyali: son 15 günde fiyat bandı en çok %4 ve hacim, önceki 20 günün ortalamasının en az 1,5 katı. Sinyal çıkan hisse, ertesi günün kapanış fiyatıyla deftere girer ve 6 ay izlenir. Stop yok. Geçmiş testte 10 günde ortalama +%1,95, 20 günde +%2,95 çıkmıştı; asıl soru bunun canlı veride de tutup tutmadığı. Sinyal seyrektir (ayda birkaç tane), "henüz yok" yazması bozukluk değil. Bu gerçek alım değil, bir kayıttır.</p>
+    <div id="hstats"></div>
+    <div id="hlist"></div>
+    <div class="msg" id="hmsg">Yükleniyor…</div>
   </section>
 
   <footer>Dip OBV: sinyal sayfasındaki tüm kayıtlar tahmindir ve geçmiş performans geleceği garanti etmez. Momentum: son 126 işlem günündeki getiriye göre sıralama (işlem hacmi en düşük %30 hisse hariç). Sakin = oynaklığı düşük %20 içinde ve momentumu orta üstü; Zirve + hacim = son 6 ay getirisi en iyi %20'de, fiyat 55 günlük zirvenin %3 yakınında ve hacim 20 günlük ortalamanın en az 1,2 katı (geçmişte ham getirisi yüksek, kıyasa üstünlüğü tutarsız). RSI, MACD, SMA20/50, hacim ve taze kesişimlerden skor üretilir: GÜÇLÜ AL ≥5, AL 3-4, SAT -3/-4, GÜÇLÜ SAT ≤-5. Yahoo Finance verisi ~15 dk gecikmelidir; gün içinde mum kapanmadığı için sinyaller değişebilir. Getiriler komisyonsuz ve kapanış fiyatıyladır, güncel hisse listesi kullanıldığı için geçmiş sonuçlar iyimser olabilir. Geçmiş performans geleceği garanti etmez. Yatırım tavsiyesi değildir.</footer>
@@ -356,6 +364,8 @@ function tab(which) {
   $("t-perf").setAttribute("aria-selected", which === "perf");
   $("p-takip").hidden = which !== "takip";
   $("t-takip").setAttribute("aria-selected", which === "takip");
+  $("p-htakip").hidden = which !== "htakip";
+  $("t-htakip").setAttribute("aria-selected", which === "htakip");
 }
 
 // ---- Takip defteri (takip/pozisyonlar.csv + takip/gunluk.csv) ----
@@ -415,6 +425,82 @@ function loadTakip() {
     .then(([a, b]) => renderTakip(parseCsv(a), parseCsv(b)))
     .catch(() => { $("tmsg").hidden = false; $("tmsg").textContent = "Takip verisi yüklenemedi."; });
 }
+
+// ---- Hacim takip (takip_pozisyon.csv + takip_gunluk.csv) ----
+const hnum = v => { const x = parseFloat(v); return isNaN(x) ? null : x; };
+const hcsv = t => parseCsv(t.replace(/^\uFEFF/, ""));
+
+function renderHTakip(poz, gun) {
+  const items = poz.map(p => {
+    const rows = gun.filter(g => g.hisse === p.hisse && p.giris_tarihi && g.tarih >= p.giris_tarihi)
+      .sort((a, b) => a.tarih < b.tarih ? -1 : 1);
+    const last = rows[rows.length - 1];
+    return { p, rows, tot: hnum(p["toplam_%"]), day: last ? hnum(last["gunluk_%"]) : null };
+  }).sort((a, b) => {
+    const wa = a.p.durum === "giris_bekliyor" ? 1 : 0, wb = b.p.durum === "giris_bekliyor" ? 1 : 0;
+    if (wa !== wb) return wb - wa;
+    return (b.tot ?? -999) - (a.tot ?? -999);
+  });
+
+  const acik = items.filter(i => i.p.durum === "acik" && i.tot != null);
+  const bekl = items.filter(i => i.p.durum === "giris_bekliyor").length;
+  const win = acik.filter(i => i.tot > 0).length, loss = acik.filter(i => i.tot < 0).length;
+  const avg = acik.length ? acik.reduce((s, i) => s + i.tot, 0) / acik.length : null;
+  const vade = key => {
+    const a = items.map(i => hnum(i.p[key])).filter(x => x != null);
+    return a.length ? { n: a.length, avg: a.reduce((s, x) => s + x, 0) / a.length, win: a.filter(x => x > 0).length / a.length * 100 } : null;
+  };
+  const v10 = vade("g10_%"), v20 = vade("g20_%");
+  const vrow = (label, v) => `<tr><td>${label}</td><td>${v ? v.n : "—"}</td><td>${v ? `<b class="${sgn(v.avg)}">${pct(v.avg)}</b>` : "—"}</td><td>${v ? "%" + nf(v.win, 0) : "—"}</td></tr>`;
+
+  $("hstats").innerHTML = `<div class="grid2">
+      <div>Takipte<b>${acik.length}</b></div>
+      <div>Ortalama toplam<b class="${sgn(avg)}">${avg == null ? "—" : pct(avg)}</b></div>
+      <div>KÂR<b class="up">${win}</b></div>
+      <div>ZARAR<b class="down">${loss}</b></div>
+      <div>Giriş bekleyen<b>${bekl}</b>yarın kapanışta girer</div>
+      <div>Toplam sinyal<b>${items.length}</b>6 aylık kayıt</div></div>
+    <div class="card"><b style="font-size:14px">Vade özeti (testle karşılaştırma)</b>
+      <table><tr><th></th><th>Sinyal</th><th>Ortalama</th><th>Kazanan</th></tr>
+        ${vrow("10. gün (canlı)", v10)}
+        <tr><td>10. gün (test)</td><td>123</td><td><b class="up">+1,95%</b></td><td>%60</td></tr>
+        ${vrow("20. gün (canlı)", v20)}
+        <tr><td>20. gün (test)</td><td>123</td><td><b class="up">+2,95%</b></td><td>%59</td></tr>
+      </table>
+      <div class="edge">Canlı sonuç testten belirgin düşükse sinyal işe yaramıyor demektir. 30'dan az sinyalde sonuçlara güvenme.</div></div>`;
+
+  $("hlist").innerHTML = items.map(i => {
+    const p = i.p, tot = i.tot, bekliyor = p.durum === "giris_bekliyor";
+    const label = bekliyor ? "GİRİŞ BEKLİYOR" : tot == null ? "—" : tot > 0 ? "KÂR" : tot < 0 ? "ZARAR" : "BAŞABAŞ";
+    const badge = bekliyor || tot == null ? "BEKLE" : tot > 0 ? "AL" : tot < 0 ? "SAT" : "BEKLE";
+    const meta = bekliyor
+      ? `Sinyal ${trDate(p.sinyal_tarihi)} · sinyal fiyatı ${nf(hnum(p.sinyal_fiyati) ?? 0)} TL · giriş ertesi gün kapanışı`
+      : `Sinyal ${trDate(p.sinyal_tarihi)} · giriş ${trDate(p.giris_tarihi)} · ${nf(hnum(p.giris_fiyati) ?? 0)} TL · ${p.gun_sayisi || 0}. gün${p.durum === "kapandi" ? " · tamamlandı" : ""}`;
+    const table = i.rows.length
+      ? `<div style="max-height:240px;overflow:auto"><table><tr><th>Tarih</th><th>Kapanış</th><th>Günlük</th><th>Toplam</th></tr>${
+          i.rows.slice().reverse().map(r => `<tr><td>${trDate(r.tarih)}</td><td>${nf(hnum(r.kapanis) ?? 0)}</td>
+          <td class="${sgn(hnum(r["gunluk_%"]))}">${pct(hnum(r["gunluk_%"]))}</td>
+          <td class="${sgn(hnum(r["toplam_%"]))}">${pct(hnum(r["toplam_%"]))}</td></tr>`).join("")}</table></div>`
+      : `<div class="lastbuy">Günlük kayıt henüz yok.</div>`;
+    return `<details class="row"><summary>
+      <div><span class="badge ${badge}">${label}</span><span class="sym">${p.hisse}</span>
+        <div class="meta">${meta}</div></div>
+      <div class="px">${tot == null ? "—" : pct(tot)}<div class="chg ${sgn(i.day)}">${i.day == null ? "" : "bugün " + pct(i.day)}</div></div>
+    </summary><div class="detail">
+      <ul class="why"><li>Sinyal günü: bant %${nf(hnum(p["bant_%"]) ?? 0, 1)} · hacim ${nf(hnum(p.hacim_orani) ?? 0, 1)} kat · zirvenin %${nf(hnum(p["zirveye_oran_%"]) ?? 0, 0)}'inde</li>
+      <li>10. gün: ${pct(hnum(p["g10_%"]))} · 20. gün: ${pct(hnum(p["g20_%"]))}</li></ul>${table}</div></details>`;
+  }).join("");
+  $("hmsg").hidden = items.length > 0;
+  if (!items.length) $("hmsg").textContent = "Henüz sinyal yok. Kural nadiren sağlanır; sinyal çıktıkça burada birikir.";
+}
+
+function loadHTakip() {
+  const get = f => fetch(f, { cache: "no-store" }).then(r => r.ok ? r.text() : "");
+  return Promise.all([get("takip_pozisyon.csv"), get("takip_gunluk.csv")])
+    .then(([a, b]) => renderHTakip(hcsv(a), hcsv(b)))
+    .catch(() => { $("hmsg").hidden = false; $("hmsg").textContent = "Hacim takip verisi yüklenemedi."; });
+}
+$("t-htakip").onclick = () => tab("htakip");
 $("t-takip").onclick = () => tab("takip");
 $("t-dip").onclick = () => tab("dip");
 $("t-dip2").onclick = () => tab("dip2");
@@ -446,6 +532,7 @@ function load() {
 }
 load();
 loadTakip();
+loadHTakip();
 setInterval(() => { if (!document.querySelector("details[open]") && !$("q").value) load(); }, 5 * 60 * 1000);
 </script>
 </body>
