@@ -92,6 +92,7 @@
     <button role="tab" id="t-mom" aria-selected="false">Momentum</button>
     <button role="tab" id="t-sig" aria-selected="false">Sinyaller</button>
     <button role="tab" id="t-perf" aria-selected="false">Performans</button>
+    <button role="tab" id="t-takip" aria-selected="false">Takip</button>
   </div>
 
   <section id="p-dip">
@@ -141,6 +142,13 @@
     <div class="chips" id="pchips"></div>
     <div id="recent"></div>
     <button class="more" id="pmore" hidden>Daha fazla göster</button>
+  </section>
+
+  <section id="p-takip" hidden>
+    <p class="lead">Canlı takip defteri: kriterlerin hepsini tutan hisse, sinyal gününün kapanış fiyatıyla deftere girer ve 6 ay boyunca izlenir. Stop yok; girişe göre toplam getiri artıdaysa KÂR, eksideyse ZARAR. Bu gerçek alım değil, sistemin işe yarayıp yaramadığını görmek için bir kayıttır.</p>
+    <div id="tstats"></div>
+    <div id="tlist"></div>
+    <div class="msg" id="tmsg">Yükleniyor…</div>
   </section>
 
   <footer>Dip OBV: sinyal sayfasındaki tüm kayıtlar tahmindir ve geçmiş performans geleceği garanti etmez. Momentum: son 126 işlem günündeki getiriye göre sıralama (işlem hacmi en düşük %30 hisse hariç). Sakin = oynaklığı düşük %20 içinde ve momentumu orta üstü; Zirve + hacim = son 6 ay getirisi en iyi %20'de, fiyat 55 günlük zirvenin %3 yakınında ve hacim 20 günlük ortalamanın en az 1,2 katı (geçmişte ham getirisi yüksek, kıyasa üstünlüğü tutarsız). RSI, MACD, SMA20/50, hacim ve taze kesişimlerden skor üretilir: GÜÇLÜ AL ≥5, AL 3-4, SAT -3/-4, GÜÇLÜ SAT ≤-5. Yahoo Finance verisi ~15 dk gecikmelidir; gün içinde mum kapanmadığı için sinyaller değişebilir. Getiriler komisyonsuz ve kapanış fiyatıyladır, güncel hisse listesi kullanıldığı için geçmiş sonuçlar iyimser olabilir. Geçmiş performans geleceği garanti etmez. Yatırım tavsiyesi değildir.</footer>
@@ -346,7 +354,68 @@ function tab(which) {
   $("p-perf").hidden = which !== "perf";
   $("t-sig").setAttribute("aria-selected", which === "sig");
   $("t-perf").setAttribute("aria-selected", which === "perf");
+  $("p-takip").hidden = which !== "takip";
+  $("t-takip").setAttribute("aria-selected", which === "takip");
 }
+
+// ---- Takip defteri (takip/pozisyonlar.csv + takip/gunluk.csv) ----
+function parseCsv(text) {
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  const head = lines[0].split(",");
+  return lines.slice(1).filter(Boolean).map(l => {
+    const c = l.split(",");
+    const o = {};
+    head.forEach((h, i) => { o[h] = c[i]; });
+    return o;
+  });
+}
+const trDate = s => s.split("-").reverse().join(".");
+
+function renderTakip(poz, gun) {
+  const bySym = {};
+  for (const g of gun) (bySym[g.sembol + "|" + g.giris_tarihi] = bySym[g.sembol + "|" + g.giris_tarihi] || []).push(g);
+  const items = poz.map(p => {
+    const rows = (bySym[p.sembol + "|" + p.giris_tarihi] || []).sort((a, b) => a.tarih < b.tarih ? -1 : 1);
+    const last = rows[rows.length - 1];
+    return { p, rows, last, tot: last ? parseFloat(last.toplam_pct) : null, day: last ? parseFloat(last.gunluk_pct) : null };
+  }).sort((a, b) => (b.tot ?? -999) - (a.tot ?? -999));
+
+  const live = items.filter(i => i.p.durum === "TAKIPTE" && i.tot != null);
+  const win = live.filter(i => i.tot > 0).length, loss = live.filter(i => i.tot < 0).length;
+  const avg = live.length ? live.reduce((s, i) => s + i.tot, 0) / live.length : null;
+  $("tstats").innerHTML = `<div class="grid2">
+    <div>Takipte<b>${live.length}</b></div>
+    <div>Ortalama toplam<b class="${sgn(avg)}">${avg == null ? "—" : pct(avg)}</b></div>
+    <div>KÂR<b class="up">${win}</b></div>
+    <div>ZARAR<b class="down">${loss}</b></div></div>`;
+
+  $("tlist").innerHTML = items.map(i => {
+    const p = i.p, tot = i.tot, label = tot == null ? "—" : tot > 0 ? "KÂR" : tot < 0 ? "ZARAR" : "BAŞABAŞ";
+    const badge = tot == null ? "BEKLE" : tot > 0 ? "AL" : tot < 0 ? "SAT" : "BEKLE";
+    const table = i.rows.length
+      ? `<div style="max-height:240px;overflow:auto"><table><tr><th>Tarih</th><th>Kapanış</th><th>Günlük</th><th>Toplam</th></tr>${
+          i.rows.slice().reverse().map(r => `<tr><td>${trDate(r.tarih)}</td><td>${nf(parseFloat(r.kapanis))}</td>
+          <td class="${sgn(parseFloat(r.gunluk_pct))}">${pct(parseFloat(r.gunluk_pct))}</td>
+          <td class="${sgn(parseFloat(r.toplam_pct))}">${pct(parseFloat(r.toplam_pct))}</td></tr>`).join("")}</table></div>`
+      : `<div class="lastbuy">Günlük kayıt henüz yok.</div>`;
+    return `<details class="row"><summary>
+      <div><span class="badge ${badge}">${label}</span><span class="sym">${p.sembol}</span>
+        <div class="meta">Giriş ${trDate(p.giris_tarihi)} · ${nf(parseFloat(p.giris_fiyati))} TL · bitiş ${trDate(p.bitis_tarihi)}${p.durum === "TAMAMLANDI" ? " · tamamlandı" : ""}</div></div>
+      <div class="px">${tot == null ? "—" : pct(tot)}<div class="chg ${sgn(i.day)}">${i.day == null ? "" : "bugün " + pct(i.day)}</div></div>
+    </summary><div class="detail">${table}</div></details>`;
+  }).join("");
+  $("tmsg").hidden = items.length > 0;
+  if (!items.length) $("tmsg").textContent = "Takipte hisse yok.";
+}
+
+function loadTakip() {
+  const get = f => fetch("takip/" + f, { cache: "no-store" }).then(r => { if (!r.ok) throw 0; return r.text(); });
+  return Promise.all([get("pozisyonlar.csv"), get("gunluk.csv")])
+    .then(([a, b]) => renderTakip(parseCsv(a), parseCsv(b)))
+    .catch(() => { $("tmsg").hidden = false; $("tmsg").textContent = "Takip verisi yüklenemedi."; });
+}
+$("t-takip").onclick = () => tab("takip");
 $("t-dip").onclick = () => tab("dip");
 $("t-dip2").onclick = () => tab("dip2");
 for (const key in DV) {
@@ -376,6 +445,7 @@ function load() {
     .catch(() => { if (!data) { $("msg").textContent = "Veri yüklenemedi."; $("mmsg").textContent = "Veri yüklenemedi."; $("dmsg").textContent = "Veri yüklenemedi."; $("emsg").textContent = "Veri yüklenemedi."; } });
 }
 load();
+loadTakip();
 setInterval(() => { if (!document.querySelector("details[open]") && !$("q").value) load(); }, 5 * 60 * 1000);
 </script>
 </body>
