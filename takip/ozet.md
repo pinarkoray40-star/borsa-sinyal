@@ -1,6 +1,6 @@
 # Takip özeti — 04.11.2026
 
-Bugün giren: ACSEL, PETUN
+Bugün giren: yok
 
 Takipte: 5 hisse | KÂR: 2 | ZARAR: 1 | ortalama: %1.64
 
