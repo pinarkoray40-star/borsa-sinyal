@@ -6,7 +6,7 @@ on:
   push:
     branches: [main]
   workflow_run:
-    workflows: ["Takip defteri"]
+    workflows: ["Takip defteri", "Hacim takip"]
     types: [completed]
   workflow_dispatch:
 
@@ -36,6 +36,7 @@ jobs:
           cp index.html backtest.html _site/
           if [ -f backtest.json ]; then cp backtest.json _site/; fi
           if [ -d takip ]; then cp -r takip _site/takip; fi
+          for f in takip_pozisyon.csv takip_gunluk.csv; do if [ -f "$f" ]; then cp "$f" _site/; fi; done
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
