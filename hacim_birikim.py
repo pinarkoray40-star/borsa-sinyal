@@ -3,9 +3,9 @@ hacim_birikim.py
 Ücretsiz fiyat/hacim verisiyle iki sinyal arar (AKD/takas gerekmez):
 
   Sinyal A - Yükselirken hacim: son 5 günde fiyat artmış VE hacim, önceki
-             20 günün ortalamasının en az 3 katı.
+             20 günün ortalamasının en az HACIM_ORAN_MIN katı.
   Sinyal B - Yatay birikim: son 15 günde fiyat dar bantta (<= %8) VE son 5
-             günün hacmi önceki 20 günün ortalamasının en az 1.5 katı.
+             günün hacmi önceki 20 günün ortalamasının en az HACIM_ORAN_MIN katı.
 
 Ayrıca zirveye uzaklık (60 günlük) yazılır; zirveye çok yakın hisseler
 "tepede" diye işaretlenir (yükselişi yeni başlayanları istiyorsun).
@@ -23,7 +23,7 @@ import pandas as pd
 import borsapy as bp
 
 # Eşikler (istersen değiştir)
-HACIM_ORAN_MIN = 1.5      # son 5g ort hacim / önceki 20g ort hacim
+HACIM_ORAN_MIN = 3.0      # son 5g ort hacim / önceki 20g ort hacim
 YATAY_BANT_MAX = 0.08     # 15 günlük (max-min)/min
 TEPE_ESIK = 0.95          # kapanış / 60g zirve >= bu ise "tepede"
 
