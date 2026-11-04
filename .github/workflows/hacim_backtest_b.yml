@@ -1,0 +1,17 @@
+name: Hacim backtest B
+on: workflow_dispatch
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install borsapy pandas numpy
+      - run: python hacim_backtest_b.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hacim-backtest-b
+          path: hacim_backtest_b_sonuc.csv
