@@ -3,7 +3,7 @@ hacim_birikim.py
 Ücretsiz fiyat/hacim verisiyle iki sinyal arar (AKD/takas gerekmez):
 
   Sinyal A - Yükselirken hacim: son 5 günde fiyat artmış VE hacim, önceki
-             20 günün ortalamasının en az 1.5 katı.
+             20 günün ortalamasının en az 3 katı.
   Sinyal B - Yatay birikim: son 15 günde fiyat dar bantta (<= %8) VE son 5
              günün hacmi önceki 20 günün ortalamasının en az 1.5 katı.
 
