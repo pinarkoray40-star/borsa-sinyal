@@ -111,7 +111,8 @@ def hazirla(kod, df, endeks):
     dt = tarihler(df)
     getiri = k.pct_change()
 
-    d = pd.DataFrame({"hisse": kod})
+    d = pd.DataFrame(index=range(len(k)))
+    d["hisse"] = kod
     d["tarih"] = dt.strftime("%Y-%m-%d") if dt is not None else range(len(k))
     d["kapanis"] = k
     d["bant15"] = (k.rolling(15).max() - k.rolling(15).min()) / k.rolling(15).min() * 100
@@ -167,7 +168,8 @@ def guvenli(args):
         if df is None:
             return None
         return hazirla(kod, df, endeks)
-    except Exception:
+    except Exception as e:
+        print(f"{kod}: hata ({type(e).__name__}: {e})")
         return None
 
 
