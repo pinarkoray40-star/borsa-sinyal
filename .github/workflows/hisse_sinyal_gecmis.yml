@@ -1,0 +1,26 @@
+name: Hisse sinyal gecmisi
+on:
+  workflow_dispatch:
+    inputs:
+      hisse:
+        description: "Hisse kodu (ornek: DOGUB)"
+        required: true
+        default: "DOGUB"
+
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Paketleri kur
+        run: pip install borsapy pandas numpy
+      - name: Sinyal gecmisi
+        run: python hisse_sinyal_gecmis.py "${{ github.event.inputs.hisse }}"
+      - name: Sonucu sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinyal-gecmis-sonuc
+          path: "*_sinyal_gecmis.csv"
