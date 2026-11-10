@@ -1,0 +1,22 @@
+name: Baslangic yakala
+on:
+  workflow_dispatch:
+
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Paketleri kur
+        run: pip install borsapy pandas numpy
+      - name: Baslangic yakala
+        run: python baslangic_yakala.py
+      - name: Sonucu sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: baslangic-yakala-sonuc
+          path: baslangic_adaylar.csv
