@@ -1,0 +1,21 @@
+name: Yakin aday
+on:
+  workflow_dispatch:
+
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Paketleri kur
+        run: pip install borsapy pandas numpy
+      - name: Yakin aday kontrolu
+        run: python yakin_aday.py
+      - name: Sonucu sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: yakin-aday-sonuc
+          path: yakin_aday_sonuc.csv
