@@ -1,0 +1,22 @@
+name: KAP bedelsiz kesif 2
+on:
+  workflow_dispatch:
+
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - name: KAP bedelsiz kesif 2. adim
+        run: python kap_bedelsiz_probe2.py
+      - name: Sonucu sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: kap-bedelsiz-kesif2
+          path: kap_bedelsiz_probe2.md
+          if-no-files-found: ignore
