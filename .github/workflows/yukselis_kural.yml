@@ -1,0 +1,23 @@
+name: Yukselis kural
+on:
+  workflow_dispatch:
+
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Paketleri kur
+        run: pip install borsapy pandas numpy
+      - name: Yukselis kural analizi
+        run: python yukselis_kural.py
+      - name: Sonucu sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: yukselis-kural-bugun
+          path: yukselis_kural_bugun.csv
+          if-no-files-found: ignore
