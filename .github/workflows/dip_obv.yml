@@ -1,0 +1,31 @@
+name: Dip OBV
+on:
+  workflow_dispatch:
+    inputs:
+      mod:
+        description: "tara = bugünün sinyalleri, backtest = geçmiş performans"
+        default: "tara"
+        type: choice
+        options:
+          - tara
+          - backtest
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install borsapy pandas numpy
+      - name: Tara
+        if: ${{ inputs.mod == 'tara' }}
+        run: python dip_obv.py
+      - name: Backtest
+        if: ${{ inputs.mod == 'backtest' }}
+        run: python dip_obv.py --backtest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dip-obv-sonuc
+          path: dip_obv_*.csv
