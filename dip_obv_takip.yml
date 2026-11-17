@@ -1,0 +1,33 @@
+name: Dip OBV takip
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 16 * * 1-5" # 19:15 TR, seans kapanışından sonra
+permissions:
+  contents: write
+concurrency:
+  group: dip-obv-takip
+  cancel-in-progress: false
+jobs:
+  takip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install borsapy pandas numpy
+      - run: python takip_dip.py
+      - name: Kayitlari repoya yaz
+        run: |
+          git config user.name "dip-takip-bot"
+          git config user.email "dip-takip-bot@users.noreply.github.com"
+          git add takip_dip_pozisyon.csv takip_dip_gunluk.csv
+          if git diff --staged --quiet; then
+            echo "Değişiklik yok"
+          else
+            git commit -m "Dip OBV takip güncellemesi"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi
