@@ -89,6 +89,7 @@
   <div class="tabs" role="tablist">
     <button role="tab" id="t-dip" aria-selected="true">Dip OBV</button>
     <button role="tab" id="t-dip2" aria-selected="false">Dip OBV 2</button>
+    <button role="tab" id="t-dip3" aria-selected="false">Dip OBV 3</button>
     <button role="tab" id="t-mom" aria-selected="false">Momentum</button>
     <button role="tab" id="t-sig" aria-selected="false">Sinyaller</button>
     <button role="tab" id="t-perf" aria-selected="false">Performans</button>
@@ -114,6 +115,16 @@
     <div id="elist"></div>
     <button class="more" id="emore" hidden>Daha fazla göster</button>
     <div class="msg" id="emsg">Yükleniyor…</div>
+  </section>
+
+  <section id="p-dip3" hidden>
+    <div class="good"><b>Dip OBV 3</b> (üçüncü gösterge, ilk ikisinden ayrı kayıt tutar): Dip OBV Dengeli v1.5 mantığı, <b>5 dakikalık mum</b>, ayar seti 2 ve ek olarak <b>VWAP şartı</b>. Ayarlar: Rel. Hacim ≥ 14 · Dar aralık %1 · OBV 98 · RSI 3 (46-63) · Volatilite çarpanı 1,1 · Net akış 41. Dokuz şartın hepsi aynı mumda sağlanınca AL: sekiz şart v1.5 ile aynı, dokuzuncusu kapanışın gün içi VWAP'ın üstünde ya da en çok %0,5 altında olması.</div>
+    <div class="warn"><b>Önce bunu bil.</b> Bu sekme yeni, kayıt şimdi başlıyor; sinyal seyrek çıkabilir. Veri Yahoo'dan, ~15 dk gecikmeli ve sadece <b>kapanmış</b> mumlara bakılır. Yahoo 5 dakikalık geçmişi en fazla <b>60 gün</b> verir: "geçmiş" sinyaller bu aralıktan, "canlı" olanlar programın bundan sonra bulduklarıdır ve 6 ay takip edilir. Giriş fiyatı sinyal mumunun kapanışıdır; kâr/zarar günlük kapanışlara göre hesaplanır, komisyon yoktur. VWAP şartının işe yarayıp yaramadığını Dip OBV sekmesindeki sonuçlarla karşılaştırarak anlarız. Az sinyalde sonuçlara güvenme.</div>
+    <div id="fstats"></div>
+    <div class="chips" id="fchips"></div>
+    <div id="flist"></div>
+    <button class="more" id="fmore" hidden>Daha fazla göster</button>
+    <div class="msg" id="fmsg">Yükleniyor…</div>
   </section>
 
   <section id="p-mom" hidden>
@@ -170,7 +181,7 @@ const sgn = v => v == null ? "" : v >= 0 ? "up" : "down";
 const $ = id => document.getElementById(id);
 
 let mchip = "Hepsi";
-const DV = { dip: { p: "d", chip: "Hepsi", shown: 30, name: "Dip OBV" }, dip2: { p: "e", chip: "Hepsi", shown: 30, name: "Dip OBV 2" } };
+const DV = { dip: { p: "d", chip: "Hepsi", shown: 30, name: "Dip OBV" }, dip2: { p: "e", chip: "Hepsi", shown: 30, name: "Dip OBV 2" }, dip3: { p: "f", chip: "Hepsi", shown: 30, name: "Dip OBV 3" } };
 let data = null, tier = "Hepsi", q = "", shown = 40;
 let ptier = "Hepsi", pshown = 40;
 
@@ -356,6 +367,8 @@ function tab(which) {
   $("t-dip").setAttribute("aria-selected", which === "dip");
   $("p-dip2").hidden = which !== "dip2";
   $("t-dip2").setAttribute("aria-selected", which === "dip2");
+  $("p-dip3").hidden = which !== "dip3";
+  $("t-dip3").setAttribute("aria-selected", which === "dip3");
   $("p-mom").hidden = which !== "mom";
   $("t-mom").setAttribute("aria-selected", which === "mom");
   $("p-sig").hidden = which !== "sig";
@@ -428,7 +441,7 @@ function loadTakip() {
 
 // ---- Hacim takip (takip_pozisyon.csv + takip_gunluk.csv) ----
 const hnum = v => { const x = parseFloat(v); return isNaN(x) ? null : x; };
-const hcsv = t => parseCsv(t.replace(/^\uFEFF/, ""));
+const hcsv = t => parseCsv(t.replace(/^﻿/, ""));
 
 function renderHTakip(poz, gun) {
   const items = poz.map(p => {
@@ -504,6 +517,7 @@ $("t-htakip").onclick = () => tab("htakip");
 $("t-takip").onclick = () => tab("takip");
 $("t-dip").onclick = () => tab("dip");
 $("t-dip2").onclick = () => tab("dip2");
+$("t-dip3").onclick = () => tab("dip3");
 for (const key in DV) {
   const V = DV[key];
   $(V.p + "chips").addEventListener("click", e => { const t = e.target.dataset.t; if (t) { V.chip = t; V.shown = 30; renderDip(key); } });
@@ -526,9 +540,9 @@ function load() {
       data = d;
       $("updated").textContent = "Güncelleme: " + new Date(d.updated).toLocaleString("tr-TR", { dateStyle: "medium", timeStyle: "short" }) +
         " · " + d.n_stocks + " hisse";
-      renderDip("dip"); renderDip("dip2"); renderMom(); renderSignals(); renderPerf();
+      renderDip("dip"); renderDip("dip2"); renderDip("dip3"); renderMom(); renderSignals(); renderPerf();
     })
-    .catch(() => { if (!data) { $("msg").textContent = "Veri yüklenemedi."; $("mmsg").textContent = "Veri yüklenemedi."; $("dmsg").textContent = "Veri yüklenemedi."; $("emsg").textContent = "Veri yüklenemedi."; } });
+    .catch(() => { if (!data) { $("msg").textContent = "Veri yüklenemedi."; $("mmsg").textContent = "Veri yüklenemedi."; $("dmsg").textContent = "Veri yüklenemedi."; $("emsg").textContent = "Veri yüklenemedi."; $("fmsg").textContent = "Veri yüklenemedi."; } });
 }
 load();
 loadTakip();
