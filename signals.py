@@ -433,6 +433,33 @@ def dip2_components(h, l, c, o, v, P: dict = DIP2) -> pd.DataFrame:
     return pd.DataFrame({"buy": buy, "score": score, "rel_vol": rel_vol, "flow": obv_ratio * 100, "rsi": rsi_v})
 
 
+# ---------- Dip OBV 3: v1.5 mantığı + ayar seti 2 + VWAP şartı (üçüncü gösterge, ayrı kayıt) ----------
+# Ayar seti 2 kullanıcının TradingView'daki değerleridir. DEĞİŞTİRMEYİN.
+# vwap_tol: kapanış, gün içi VWAP'ın en çok bu yüzde kadar altında olabilir (0 = kesin üstünde olmalı).
+DIP3 = {"rel_vol": 14.0, "narrow": 1.0, "obv_lb": 98, "rsi_len": 3, "vol_mult": 1.1, "flow_lb": 41,
+        "vwap_tol": 0.5}
+
+
+def vwap_series(h: pd.Series, l: pd.Series, c: pd.Series, v: pd.Series) -> pd.Series:
+    """Gün içi VWAP: her işlem günü başında sıfırlanır, tipik fiyat (H+L+C)/3 x hacim."""
+    tp = (h + l + c) / 3.0
+    day = np.asarray(h.index.date)
+    pv = (tp * v).groupby(day).cumsum()
+    vv = v.groupby(day).cumsum()
+    return pv / vv.replace(0, np.nan)
+
+
+def dip3_components(h, l, c, v, P: dict = DIP3) -> pd.DataFrame:
+    """v1.5 şartlarının hepsi (dip_components, değişmeden) + kapanış VWAP'ın üstünde/hemen altında."""
+    base = dip_components(h, l, c, v, P)
+    vw = vwap_series(h, l, c, v)
+    vwap_ok = (c >= vw * (1 - P["vwap_tol"] / 100.0)).fillna(False)
+    out = base.copy()
+    out["vwap_ok"] = vwap_ok
+    out["buy"] = base["buy"].fillna(False) & vwap_ok      # skor aynı kalır, VWAP sadece ek filtre
+    return out
+
+
 def fetch_intraday(symbols: list, period: str, interval: str = "5m", chunk: int = 50):
     """5 dk OHLCV. Yahoo 5 dk geçmişini en fazla 60 gün verir."""
     import yfinance as yf
@@ -484,8 +511,12 @@ def dip_scan(frames: dict, now: pd.Timestamp, kind: str = "v1") -> list:
         d = d[d.index <= cutoff]
         if len(d) < 130:  # OBV 98 ve net akış 41 uzun ısınma ister
             continue
-        comp = (dip2_components(d["h"], d["l"], d["c"], d["o"], d["v"]) if kind == "v2"
-                else dip_components(d["h"], d["l"], d["c"], d["v"]))
+        if kind == "v2":
+            comp = dip2_components(d["h"], d["l"], d["c"], d["o"], d["v"])
+        elif kind == "v3":
+            comp = dip3_components(d["h"], d["l"], d["c"], d["v"])
+        else:
+            comp = dip_components(d["h"], d["l"], d["c"], d["v"])
         hit = comp.index[comp["buy"].fillna(False).to_numpy()]
         for ts in hit:
             r = comp.loc[ts]
@@ -527,7 +558,7 @@ def load_prev_log(url):
 def dip_block(close: pd.DataFrame, symbols: list, prev_log, now=None, kind: str = "v1", fetch=None):
     """Günlüğü günceller. Dönüş: (sayfa verisi, yazılacak günlük veya None)."""
     now = now if now is not None else pd.Timestamp.now(tz="UTC")
-    P = DIP2 if kind == "v2" else DIP
+    P = DIP2 if kind == "v2" else (DIP3 if kind == "v3" else DIP)
     if prev_log is not None and prev_log.get("params") != P:
         prev_log = None  # ayarlar değişti: eski ayarla tutulan kayıt karışmasın, baştan başla
     first = prev_log is None
@@ -679,7 +710,9 @@ def main():
     url2 = url.replace("dip_log.json", "dip2_log.json") if url else None
     prev = load_prev_log(url) if (url and not args.no_dip) else None
     prev2 = load_prev_log(url2) if (url2 and not args.no_dip) else None
-    need60 = any(pl is None or pl.get("params") != P for pl, P in ((prev, DIP), (prev2, DIP2)))
+    url3 = url.replace("dip_log.json", "dip3_log.json") if url else None
+    prev3 = load_prev_log(url3) if (url3 and not args.no_dip) else None
+    need60 = any(pl is None or pl.get("params") != P for pl, P in ((prev, DIP), (prev2, DIP2), (prev3, DIP3)))
     cache = {}
 
     def fetch(_period):  # iki gösterge için 5 dk veriyi bir kez indir
@@ -691,8 +724,18 @@ def main():
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     if not args.no_dip:
-        for key, kind, pl, fname in (("dip", "v1", prev, "dip_log.json"), ("dip2", "v2", prev2, "dip2_log.json")):
-            page, log, warn = dip_block(close, symbols, pl, kind=kind, fetch=fetch)
+        for key, kind, pl, fname in (("dip", "v1", prev, "dip_log.json"), ("dip2", "v2", prev2, "dip2_log.json"),
+                                     ("dip3", "v3", prev3, "dip3_log.json")):
+            if kind == "v3":
+                # yeni gösterge hata verirse ilk ikisini ve siteyi bozmasın
+                try:
+                    page, log, warn = dip_block(close, symbols, pl, kind=kind, fetch=fetch)
+                except Exception as exc:
+                    print(f"dip3 hatası (diğer göstergeler etkilenmedi): {exc}")
+                    payload[key] = None
+                    continue
+            else:
+                page, log, warn = dip_block(close, symbols, pl, kind=kind, fetch=fetch)
             payload[key] = page
             if log is not None:
                 (out.parent / fname).write_text(json.dumps(log, ensure_ascii=False, separators=(",", ":")),
