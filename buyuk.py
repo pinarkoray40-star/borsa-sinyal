@@ -7,14 +7,15 @@ Sinyal (hepsi aynı gün kapanışında sağlanmalı, işlem hacmi en düşük %
   hacim kuruması : son 5 günün ortalama hacmi, 60 günlük ortalamanın %70'inden az
   zirveye yakın  : kapanış 60 günlük zirvenin en az %90'ı
 Aynı hissede sinyalden sonra 21 gün yeni sinyal sayılmaz.
-İşlem kuralı (takip): giriş = sinyal günü kapanışı; 42 işlem günü içinde kapanış önce +%30 olursa HEDEF,
-önce -%15 olursa STOP, ikisi de olmazsa 42. gün kapanışıyla SÜRE DOLDU. Hepsi kapanış fiyatıyla.
+İşlem kuralı (takip): giriş = sinyal günü kapanışı; kapanış, girişten sonraki en yüksek kapanıştan (zirve) %25 aşağı
+inerse İZLEYEN STOP ile çıkılır; olmazsa 84. işlem günü kapanışıyla SÜRE DOLDU. Sabit hedef yok (kazanç koşturulur).
+Hepsi kapanış fiyatıyla.
 Kayıt tutmaz: sinyaller ve sonuçlar her seferinde günlük veriden yeniden hesaplanır.
 """
 import numpy as np
 import pandas as pd
 
-PARAM = {"tp": 30.0, "sl": 15.0, "hold": 42, "track": 126, "cooldown": 21, "live_from": "2026-11-18"}
+PARAM = {"sl": 25.0, "hold": 84, "track": 126, "cooldown": 21, "live_from": "2026-11-18"}
 
 
 def ozellikler(close: pd.DataFrame, volume: pd.DataFrame):
@@ -43,19 +44,19 @@ def sinyaller(mask: np.ndarray, cooldown: int):
     return out_i, out_j
 
 
-def takip(path, tp, sl, hold):
-    """path: girişten sonraki günlerin % getirisi. Dönüş: (durum, çıkış günü, çıkış getirisi)."""
+def takip(path, sl, hold):
+    """path: girişten sonraki günlerin % getirisi. Dönüş: (durum, çıkış günü, çıkış getirisi, zirve %).
+    İzleyen stop: kapanış, o güne kadarki en yüksek kapanıştan (giriş dahil) %sl aşağıdaysa çıkış."""
+    peak = 0.0
     for k, v in enumerate(path, start=1):
         if not np.isfinite(v):
             continue
-        if v >= tp:
-            return "hedef", k, float(v)
-        if v <= -sl:
-            return "stop", k, float(v)
-    if len(path) >= hold:
-        fin = [v for v in path[:hold] if np.isfinite(v)]
-        return "süre", hold, float(fin[-1]) if fin else 0.0
-    return "açık", len(path), None
+        peak = max(peak, float(v))
+        if (1 + v / 100) <= (1 + peak / 100) * (1 - sl / 100):
+            return "stop", k, float(v), peak
+        if k >= hold:
+            return "süre", hold, float(v), peak
+    return "açık", len(path), None, peak
 
 
 def buyuk_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = PARAM) -> dict:
@@ -80,14 +81,15 @@ def buyuk_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = P
         if not np.isfinite(entry) or entry <= 0:
             continue
         path = (C[p + 1:p + P["hold"] + 1, j] / entry - 1) * 100
-        st, k, xr = takip(path, P["tp"], P["sl"], P["hold"])
+        st, k, xr, peak = takip(path, P["sl"], P["hold"])
         seen = [0.0] + [round(float(v), 2) if np.isfinite(v) else None for v in path[:k]]
         vals = [v for v in seen if v is not None]
         cur = xr if xr is not None else (vals[-1] if vals else 0.0)
         d = f"{close.index[p]:%Y-%m-%d}"
         entries.append({
             "symbol": cols[j].replace(".IS", ""), "date": d, "entry": round(entry, 2),
-            "tp_px": round(entry * (1 + P["tp"] / 100), 2), "sl_px": round(entry * (1 - P["sl"] / 100), 2),
+            "peak_px": round(entry * (1 + peak / 100), 2),
+            "stop_px": round(entry * (1 + peak / 100) * (1 - P["sl"] / 100), 2),
             "st": st, "days": int(k), "pnl": round(float(cur), 2), "max": max(vals), "min": min(vals),
             "xdate": f"{close.index[p + k]:%Y-%m-%d}" if st != "açık" else None,
             "live": d >= P["live_from"], "path": seen,
@@ -100,10 +102,10 @@ def buyuk_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = P
     if done:
         r = np.array([e["pnl"] for e in done])
         stats.update({
-            "hedef": round(sum(e["st"] == "hedef" for e in done) / len(done) * 100, 1),
             "stop": round(sum(e["st"] == "stop" for e in done) / len(done) * 100, 1),
             "sure": round(sum(e["st"] == "süre" for e in done) / len(done) * 100, 1),
             "avg": round(float(r.mean()), 2), "median": round(float(np.median(r)), 2),
+            "best": round(float(r.max()), 1), "worst": round(float(r.min()), 1),
             "win": round(float((r > 0).mean()) * 100, 1)})
     if opn:
         c = np.array([e["pnl"] for e in opn])
