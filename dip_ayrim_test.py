@@ -75,7 +75,8 @@ def ozellikler(close, volume, raw_count):
 def ist(r, cu, cd, ti, sel, y):
     n = int(sel.sum())
     if n == 0:
-        return {"n": 0}
+        nan = float("nan")
+        return {"n": 0, "hedef": nan, "stop": nan, "ort": nan, "med": nan, "y1": nan, "y2": nan}
     x = r[sel]
     a, b = r[sel & (ti < y)], r[sel & (ti >= y)]
     return {"n": n, "hedef": cu[sel].mean() * 100, "stop": cd[sel].mean() * 100, "ort": float(x.mean()),
