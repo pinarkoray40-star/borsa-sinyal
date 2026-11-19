@@ -33,7 +33,7 @@ jobs:
         run: |
           mkdir _site
           python signals.py --out _site/signals.json
-          cp index.html backtest.html _site/
+          cp index.html backtest.html buyuk.js _site/
           if [ -f backtest.json ]; then cp backtest.json _site/; fi
           if [ -d takip ]; then cp -r takip _site/takip; fi
           for f in takip_pozisyon.csv takip_gunluk.csv; do if [ -f "$f" ]; then cp "$f" _site/; fi; done
