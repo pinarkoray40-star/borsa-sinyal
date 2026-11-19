@@ -741,6 +741,13 @@ def main():
                 (out.parent / fname).write_text(json.dumps(log, ensure_ascii=False, separators=(",", ":")),
                                                 encoding="utf-8")
             print(f"{key}:", f"{page['n']} sinyal ({page['n_live']} canlı)" if page else "veri yok", warn or "")
+    try:  # Büyük Hareket (günlük veri); hata verirse diğer sekmeleri bozmasın
+        import buyuk
+        payload["buyuk"] = buyuk.buyuk_block(close, volume)
+        print("buyuk:", payload["buyuk"]["n"], "sinyal (son 6 ay),", payload["buyuk"]["n_live"], "canlı")
+    except Exception as exc:
+        print(f"buyuk hatası (diğer sekmeler etkilenmedi): {exc}")
+        payload["buyuk"] = None
     out.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
     counts = {}
