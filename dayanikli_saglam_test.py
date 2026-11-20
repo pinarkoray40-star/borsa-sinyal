@@ -65,10 +65,10 @@ def konfigler(close, volume, idx):
         C[f"W{w} dn>=80 up>=60"] = ((dr >= 0.80) & (ur >= 0.60) & yakin & g, w)
         C[f"W{w} dn>=90"] = ((dr >= 0.90) & yakin & g, w)
         if w == 120:
-            beta = r.rolling(w, min_periods=mp).cov(ri) / ri.rolling(w, min_periods=mp).var()
+            beta = r.rolling(w, min_periods=mp).cov(ri).div(ri.rolling(w, min_periods=mp).var(), axis=0)
             br = beta.rank(axis=1, pct=True)
             C["REF düşük beta<=30 (W120)"] = ((br <= 0.30) & yakin & g, w)
-    return {k: (v.fillna(False).to_numpy(), w) for k, (v, w) in C.items()}
+    return {k: (np.nan_to_num(v.to_numpy(dtype=float), nan=0.0).astype(bool), w) for k, (v, w) in C.items()}
 
 
 def calistir(close, volume, idx):
