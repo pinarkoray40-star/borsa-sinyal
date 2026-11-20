@@ -748,6 +748,13 @@ def main():
     except Exception as exc:
         print(f"buyuk hatası (diğer sekmeler etkilenmedi): {exc}")
         payload["buyuk"] = None
+    try:  # Büyük Hareket 2 (Büyük Hareket + dayanıklılık); hata verirse diğer sekmeleri bozmasın
+        import buyuk2
+        payload["buyuk2"] = buyuk2.buyuk2_block(close, volume)
+        print("buyuk2:", payload["buyuk2"]["n"], "sinyal (son 6 ay),", payload["buyuk2"]["n_live"], "canlı")
+    except Exception as exc:
+        print(f"buyuk2 hatası (diğer sekmeler etkilenmedi): {exc}")
+        payload["buyuk2"] = None
     out.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
     counts = {}
