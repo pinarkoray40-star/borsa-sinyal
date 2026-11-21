@@ -19,16 +19,17 @@
 
   function row(e, P) {
     const [lbl, c] = ST[e.st];
+    const kv = e.bench == null ? "" : ` · evren ${pct(e.bench, 1)} · fark <span class="${sgn(e.diff)}">${pct(e.diff, 1)}</span>`;
     const why = e.st === "açık"
       ? `Takip sürüyor: gün ${e.days}/${P.hold}. Zirve kapanış ${nf(e.peak_px)}, stop seviyesi ${nf(e.stop_px)} (zirve çıkarsa stop da yukarı çıkar, kapanışla kontrol edilir).`
       : `Çıkış: ${dmy(e.xdate)} (${e.days}. gün), ${lbl.toLowerCase()}, kapanışla ${pct(e.pnl, 1)}.`;
     return `<details class="row"><summary>
       <div><span class="badge ${c}">${lbl}</span><span class="sym">${e.symbol}</span>${e.live ? '<span class="tag">canlı</span>' : ""}
-        <div class="meta">${dmy(e.date)} · giriş ${nf(e.entry)} · zirve ${nf(e.peak_px)} · stop ${nf(e.stop_px)}</div></div>
+        <div class="meta">${dmy(e.date)} · giriş ${nf(e.entry)} · zirve ${nf(e.peak_px)} · stop ${nf(e.stop_px)}${kv}</div></div>
       <div class="px"><span class="${sgn(e.pnl)}">${pct(e.pnl, 1)}</span><div class="meta">${e.st === "açık" ? "şu an" : "çıkış"}</div></div>
     </summary>
     <div class="detail">${e.path.length > 1 ? spark(e.path.map(x => x == null ? 0 : x)) : ""}
-      <ul class="why"><li>${why}</li><li>Bu süre içindeki en yüksek ${pct(e.max, 1)}, en düşük ${pct(e.min, 1)} (giriş: sinyal günü kapanışı).</li></ul></div></details>`;
+      <ul class="why"><li>${why}</li><li>Bu süre içindeki en yüksek ${pct(e.max, 1)}, en düşük ${pct(e.min, 1)} (giriş: sinyal günü kapanışı).</li>${e.bench == null ? "" : `<li>Kıyas: aynı gün giriş yapılsa tüm likit hisselerin ortalaması aynı sürede ${pct(e.bench, 1)} olurdu; bu işlem ondan ${pct(e.diff, 1)} puan ${e.diff >= 0 ? "iyi" : "kötü"}.</li>`}</ul></div></details>`;
   }
 
   function render() {
@@ -54,12 +55,15 @@
         <tr><td>Ortalama getiri</td><td><b class="${sgn(S.avg)}">${pct(S.avg, 1)}</b></td></tr>
         <tr><td>Medyan getiri</td><td>${pct(S.median, 1)}</td></tr>
         <tr><td>Kazanan işlem</td><td>%${nf(S.win, 0)}</td></tr>
-        <tr><td>En iyi / en kötü</td><td>${pct(S.best, 1)} / ${pct(S.worst, 1)}</td></tr></table>` : "";
+        <tr><td>En iyi / en kötü</td><td>${pct(S.best, 1)} / ${pct(S.worst, 1)}</td></tr>
+        ${S.bench_avg == null ? "" : `<tr><td>Aynı günlerde evren ortalaması</td><td>${pct(S.bench_avg, 1)}</td></tr>
+        <tr><td>Fark (puan)</td><td><b class="${sgn(S.diff_avg)}">${pct(S.diff_avg, 1)}</b></td></tr>
+        <tr><td>Evreni geçen işlem</td><td>%${nf(S.beat, 0)}</td></tr>`}</table>` : "";
     el("bstats").innerHTML = `<div class="card"><div class="grid2">
         <div>Son 6 ayda sinyal<b>${D.n}</b>canlı: ${D.n_live} · kapanan: ${S.n_done}</div>
-        <div>Açık işlemler<b class="${sgn(S.open_avg)}">${S.n_open ? pct(S.open_avg, 1) : "—"}</b>${S.n_open ? S.n_open + " işlem, ortalama şu anki durum" : "açık işlem yok"}</div></div>
+        <div>Açık işlemler<b class="${sgn(S.open_avg)}">${S.n_open ? pct(S.open_avg, 1) : "—"}</b>${S.n_open ? S.n_open + " işlem, ortalama şu anki durum" + (S.open_bench == null ? "" : `<br>evren aynı sürede ${pct(S.open_bench, 1)}, fark <span class="${sgn(S.open_diff)}">${pct(S.open_diff, 1)}</span>`) : "açık işlem yok"}</div></div>
       ${done}
-      <div class="edge">Kapanan işlemler izleyen stop ya da 84. günle bitmiş olanlardır. Az işlemde (30'dan az) sonuçlara güvenme.${part}</div></div>`;
+      <div class="edge">Kapanan işlemler izleyen stop ya da 84. günle bitmiş olanlardır. Evren = işlem hacmi en düşük %30 hariç tüm hisselerin, aynı gün girişle aynı sürede eşit ağırlıklı ortalaması. Az işlemde (30'dan az) sonuçlara güvenme.${part}</div></div>`;
   }
 
   el("bchips").addEventListener("click", e => { const t = e.target.dataset.t; if (t) { B.chip = t; B.shown = 30; render(); } });
