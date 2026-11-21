@@ -92,6 +92,7 @@
     <button role="tab" id="t-dip3" aria-selected="false">Dip OBV 3</button>
     <button role="tab" id="t-buyuk" aria-selected="false">Büyük Hareket</button>
     <button role="tab" id="t-buyuk2" aria-selected="false">Büyük Hareket 2</button>
+    <button role="tab" id="t-ayakta" aria-selected="false">Ayakta</button>
     <button role="tab" id="t-mom" aria-selected="false">Momentum</button>
     <button role="tab" id="t-sig" aria-selected="false">Sinyaller</button>
     <button role="tab" id="t-perf" aria-selected="false">Performans</button>
@@ -131,6 +132,7 @@
 
   <section id="p-buyuk" hidden></section>
   <section id="p-buyuk2" hidden></section>
+  <section id="p-ayakta" hidden></section>
 
   <section id="p-mom" hidden>
     <div class="warn"><b>Önce riski oku.</b> Bu liste garanti vermez. Geçmiş testte en güçlü hisseleri her ay yenileyen portföy bir noktada <b>%47 değer kaybetti</b>, en kötü ayı <b>-%44</b> oldu. Sadece kaybetmeyi göze alabileceğin parayla, parçalara bölerek düşün. "40 günde %20" için güvenilir bir yöntem bulunamadı; geçmişte ortalama ayda yaklaşık %4 getirdi ve çoğu tek hisse bu hızı tutturamadı.</div>
@@ -556,5 +558,6 @@ setInterval(() => { if (!document.querySelector("details[open]") && !$("q").valu
 </script>
 <script src="buyuk.js"></script>
 <script src="buyuk2.js"></script>
+<script src="ayakta.js"></script>
 </body>
 </html>
