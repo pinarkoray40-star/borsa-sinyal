@@ -59,6 +59,35 @@ def takip(path, sl, hold):
     return "açık", len(path), None, peak
 
 
+def likit_maske(close: pd.DataFrame, volume: pd.DataFrame) -> np.ndarray:
+    """60 günlük ortalama işlem hacmi (TL) en düşük %30 olmayan hisseler (kıyas evreni)."""
+    ciro = (close * volume).rolling(60, min_periods=30).mean()
+    return (ciro.rank(axis=1, pct=True) >= 0.30).to_numpy()
+
+
+def kiyas(C: np.ndarray, L: np.ndarray, p: int, k: int):
+    """Giriş gününde likit hisselerin k gün sonraki ortalama getirisi (%). Yoksa None."""
+    T = C.shape[0]
+    if k <= 0 or p + k >= T:
+        return None
+    a, b = C[p], C[p + k]
+    ok = L[p] & np.isfinite(a) & np.isfinite(b) & (a > 0)
+    return float(np.mean(b[ok] / a[ok] - 1) * 100) if ok.any() else None
+
+
+def kiyas_istat(done: list, opn: list, stats: dict) -> None:
+    """Kapanan ve açık işlemler için evren kıyası istatistiklerini stats'a ekler."""
+    dd = [e for e in done if e["diff"] is not None]
+    if dd:
+        stats.update({"bench_avg": round(float(np.mean([e["bench"] for e in dd])), 2),
+                      "diff_avg": round(float(np.mean([e["diff"] for e in dd])), 2),
+                      "beat": round(float(np.mean([e["diff"] > 0 for e in dd])) * 100, 1)})
+    od = [e for e in opn if e["diff"] is not None]
+    if od:
+        stats.update({"open_bench": round(float(np.mean([e["bench"] for e in od])), 2),
+                      "open_diff": round(float(np.mean([e["diff"] for e in od])), 2)})
+
+
 def buyuk_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = PARAM) -> dict:
     now = now if now is not None else pd.Timestamp.now(tz="UTC")
     ist = now.tz_convert("Europe/Istanbul")
@@ -70,6 +99,7 @@ def buyuk_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = P
     T = close.shape[0]
     C = close.to_numpy()
     cols = list(close.columns)
+    L = likit_maske(close, volume)
     mask = ozellikler(close, volume)
     ii, jj = sinyaller(mask, P["cooldown"])
     first = T - 1 - P["track"]
@@ -85,6 +115,7 @@ def buyuk_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = P
         seen = [0.0] + [round(float(v), 2) if np.isfinite(v) else None for v in path[:k]]
         vals = [v for v in seen if v is not None]
         cur = xr if xr is not None else (vals[-1] if vals else 0.0)
+        b = kiyas(C, L, p, int(k))
         d = f"{close.index[p]:%Y-%m-%d}"
         entries.append({
             "symbol": cols[j].replace(".IS", ""), "date": d, "entry": round(entry, 2),
@@ -92,6 +123,8 @@ def buyuk_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = P
             "stop_px": round(entry * (1 + peak / 100) * (1 - P["sl"] / 100), 2),
             "st": st, "days": int(k), "pnl": round(float(cur), 2), "max": max(vals), "min": min(vals),
             "xdate": f"{close.index[p + k]:%Y-%m-%d}" if st != "açık" else None,
+            "bench": round(b, 2) if b is not None else None,
+            "diff": round(float(cur) - b, 2) if b is not None else None,
             "live": d >= P["live_from"], "path": seen,
         })
     entries.sort(key=lambda e: (e["date"], e["symbol"]), reverse=True)
@@ -111,6 +144,7 @@ def buyuk_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = P
         c = np.array([e["pnl"] for e in opn])
         stats["open_avg"] = round(float(c.mean()), 2)
         stats["open_win"] = round(float((c > 0).mean()) * 100, 1)
+    kiyas_istat(done, opn, stats)
     return {"params": P, "last_bar": f"{close.index[-1]:%Y-%m-%d}", "dropped_partial": dropped,
             "universe": int(close.shape[1]), "n": len(entries), "n_live": sum(e["live"] for e in entries),
             "stats": stats, "entries": entries[:300]}
