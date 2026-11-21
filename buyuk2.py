@@ -62,6 +62,7 @@ def buyuk2_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = 
     C = close.to_numpy()
     DR = dr.to_numpy()
     cols = list(close.columns)
+    L = BY.likit_maske(close, volume)
     bh = BY.ozellikler(close, volume)
     dn_ok = np.nan_to_num(DR, nan=0.0) >= P["dn_min"]
     mask = bh & dn_ok
@@ -79,6 +80,7 @@ def buyuk2_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = 
         seen = [0.0] + [round(float(v), 2) if np.isfinite(v) else None for v in path[:k]]
         vals = [v for v in seen if v is not None]
         cur = xr if xr is not None else (vals[-1] if vals else 0.0)
+        b = BY.kiyas(C, L, p, int(k))
         d = f"{close.index[p]:%Y-%m-%d}"
         entries.append({
             "symbol": cols[j].replace(".IS", ""), "date": d, "entry": round(entry, 2),
@@ -86,6 +88,8 @@ def buyuk2_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = 
             "stop_px": round(entry * (1 + peak / 100) * (1 - P["sl"] / 100), 2),
             "st": st, "days": int(k), "pnl": round(float(cur), 2), "max": max(vals), "min": min(vals),
             "xdate": f"{close.index[p + k]:%Y-%m-%d}" if st != "açık" else None,
+            "bench": round(b, 2) if b is not None else None,
+            "diff": round(float(cur) - b, 2) if b is not None else None,
             "live": d >= P["live_from"], "dnr": int(round(float(DR[p, j]) * 100)), "path": seen,
         })
     entries.sort(key=lambda e: (e["date"], e["symbol"]), reverse=True)
@@ -105,6 +109,7 @@ def buyuk2_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = 
         c = np.array([e["pnl"] for e in opn])
         stats["open_avg"] = round(float(c.mean()), 2)
         stats["open_win"] = round(float((c > 0).mean()) * 100, 1)
+    BY.kiyas_istat(done, opn, stats)
     return {"params": P, "last_bar": f"{close.index[-1]:%Y-%m-%d}", "dropped_partial": dropped,
             "universe": int(close.shape[1]), "n": len(entries), "n_live": sum(e["live"] for e in entries),
             "stats": stats, "entries": entries[:300]}
