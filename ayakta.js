@@ -7,6 +7,7 @@
     <div class="good"><b>Geçmiş test</b> 5 yıl, 525 hisse: endeks 60 günde düşmüşken böyle seçilen hisseler, 84 gün sonra aynı günün tüm likit hisse ortalamasından ortalama <b>+5,5 puan</b> önde çıktı (t=3,4); iki yarı dönemde de pozitifti (+5,1 ve +6,0).</div>
     <div class="warn"><b>Önce bunu bil.</b> (1) Bu sekme "kötü piyasada da kazandırır" demek değil: testte endeks düşmeye devam ettiğinde bu hisseler de düştü (21 günde yaklaşık %6,5, 42 günde yaklaşık %11), sadece evrenden az düştüler. Fark asıl <b>endeks toparlanınca</b> geldi. (2) Ortalamayı az sayıda büyük kazanan çekiyor: medyan fark yaklaşık -%5, hisselerin sadece yaklaşık %46'sı aynı günün ortalamasını geçti. (3) Zayıf piyasa dönemi az sayıda ve birbirine yapışık; bu yüzden t değeri olduğundan sağlam görünür. (4) Şartı geçmişe bakarak seçtik, gerçek fayda genelde daha küçük çıkar; test güncel hisse listesiyle yapıldı (batanlar yok, iyimser) ve sadece kapanış fiyatı kullandı. Asıl kanıt <b>"canlı"</b> işaretli sinyallerdir (20.11.2026 ve sonrası), birkaç ay izlenecek. Kâr/zarar komisyonsuz, kapanışlara göredir. Yatırım tavsiyesi değildir.</div>
     <div id="aystate"></div>
+    <div id="aytoday"></div>
     <div id="aystats"></div>
     <div class="chips" id="aychips"></div>
     <div id="aylist"></div>
@@ -24,13 +25,14 @@
       ? `Takip sürüyor: gün ${e.days}/${P.hold}. Stop yok, ${P.hold}. işlem gününün kapanışında çıkılır.`
       : `Çıkış: ${dmy(e.xdate)} (${e.days}. gün), ${lbl.toLowerCase()}, kapanışla ${pct(e.pnl, 1)}.`;
     const ir = e.ir == null ? "?" : pct(e.ir, 1);
+    const kv = e.bench == null ? "" : ` · evren ${pct(e.bench, 1)} · fark <span class="${sgn(e.diff)}">${pct(e.diff, 1)}</span>`;
     return `<details class="row"><summary>
       <div><span class="badge ${c}">${lbl}</span><span class="sym">${e.symbol}</span>${e.live ? '<span class="tag">canlı</span>' : ""}
-        <div class="meta">${dmy(e.date)} · giriş ${nf(e.entry)} · hisse 60 günde ${pct(e.sr, 1)} · endeks ${ir}</div></div>
+        <div class="meta">${dmy(e.date)} · giriş ${nf(e.entry)} · hisse 60 günde ${pct(e.sr, 1)} · endeks ${ir}${kv}</div></div>
       <div class="px"><span class="${sgn(e.pnl)}">${pct(e.pnl, 1)}</span><div class="meta">${e.st === "açık" ? "şu an" : "çıkış"}</div></div>
     </summary>
     <div class="detail">${e.path.length > 1 ? spark(e.path.map(x => x == null ? 0 : x)) : ""}
-      <ul class="why"><li>${why}</li><li>Bu süre içindeki en yüksek ${pct(e.max, 1)}, en düşük ${pct(e.min, 1)} (giriş: sinyal günü kapanışı).</li><li>Sinyal gününde hisse son 60 günde ${pct(e.sr, 1)}, BIST 100 ise ${ir}.</li></ul></div></details>`;
+      <ul class="why"><li>${why}</li><li>Bu süre içindeki en yüksek ${pct(e.max, 1)}, en düşük ${pct(e.min, 1)} (giriş: sinyal günü kapanışı).</li><li>Sinyal gününde hisse son 60 günde ${pct(e.sr, 1)}, BIST 100 ise ${ir}.</li>${e.bench == null ? "" : `<li>Kıyas: aynı gün giriş yapılsa tüm likit hisselerin ortalaması aynı sürede ${pct(e.bench, 1)} olurdu; bu işlem ondan ${pct(e.diff, 1)} puan ${e.diff >= 0 ? "iyi" : "kötü"}.</li>`}</ul></div></details>`;
   }
 
   function render() {
@@ -52,15 +54,22 @@
     el("aystate").innerHTML = I.ret == null ? "" :
       `<div class="card"><b>Endeks durumu:</b> BIST 100 son ${I.w} işlem gününde <b class="${sgn(I.ret)}">${pct(I.ret, 1)}</b>. ` +
       (I.weak ? "Şart sağlanıyor (en az %3 düşüş): yeni sinyal üretilebilir." : "Şart sağlanmıyor (düşüş %3'ten az): yeni sinyal çıkmaz.") + "</div>";
+    const T = D.today || [];
+    el("aytoday").innerHTML = I.ret == null ? "" :
+      `<div class="card"><b>Bugün şartı sağlayanlar (${T.length}):</b> ${I.weak ? "" : "endeks zayıf olmadığı için sinyal sayılmaz, bilgi amaçlı. "}Hisse son ${I.w} günde en az %10 yükselmiş. "Yeni" = bugün sinyal olarak kaydedildi; diğerleri son ${P.cooldown} gün içinde zaten sinyal aldığı için yeni kayıt açılmadı (tarihi yanında).` +
+      (T.length ? `<table>${T.map(t => `<tr><td><b>${t.symbol}</b> ${t.new ? '<span class="tag">yeni</span>' : ""}</td><td>${pct(t.sr, 1)} · ${nf(t.px)}</td><td>${t.new ? "bugün" : (t.last ? "son sinyal " + dmy(t.last) : "")}</td></tr>`).join("")}</table>` : "<div class=\"edge\">Şu an şartı sağlayan hisse yok.</div>") + "</div>";
     const part = D.dropped_partial ? " Bugünün mumu henüz kapanmadığı için son kapanmış güne (" + dmy(D.last_bar) + ") bakıldı." : "";
     const done = S.n_done ? `<table><tr><th></th><th>Kapanan işlemler (84. gün)</th></tr>
         <tr><td>Ortalama getiri</td><td><b class="${sgn(S.avg)}">${pct(S.avg, 1)}</b></td></tr>
         <tr><td>Medyan getiri</td><td>${pct(S.median, 1)}</td></tr>
         <tr><td>Kazanan işlem</td><td>%${nf(S.win, 0)}</td></tr>
-        <tr><td>En iyi / en kötü</td><td>${pct(S.best, 1)} / ${pct(S.worst, 1)}</td></tr></table>` : "";
+        <tr><td>En iyi / en kötü</td><td>${pct(S.best, 1)} / ${pct(S.worst, 1)}</td></tr>
+        ${S.bench_avg == null ? "" : `<tr><td>Aynı günlerde evren ortalaması</td><td>${pct(S.bench_avg, 1)}</td></tr>
+        <tr><td>Fark (puan)</td><td><b class="${sgn(S.diff_avg)}">${pct(S.diff_avg, 1)}</b></td></tr>
+        <tr><td>Evreni geçen işlem</td><td>%${nf(S.beat, 0)}</td></tr>`}</table>` : "";
     el("aystats").innerHTML = `<div class="card"><div class="grid2">
         <div>Son 6 ayda sinyal<b>${D.n}</b>canlı: ${D.n_live} · kapanan: ${S.n_done}</div>
-        <div>Açık işlemler<b class="${sgn(S.open_avg)}">${S.n_open ? pct(S.open_avg, 1) : "—"}</b>${S.n_open ? S.n_open + " işlem, ortalama şu anki durum" : "açık işlem yok"}</div></div>
+        <div>Açık işlemler<b class="${sgn(S.open_avg)}">${S.n_open ? pct(S.open_avg, 1) : "—"}</b>${S.n_open ? S.n_open + " işlem, ortalama şu anki durum" + (S.open_bench == null ? "" : `<br>evren aynı sürede ${pct(S.open_bench, 1)}, fark <span class="${sgn(S.open_diff)}">${pct(S.open_diff, 1)}</span>`) : "açık işlem yok"}</div></div>
       ${done}
       <div class="edge">Kapanan işlemler 84. günle bitmiş olanlardır. Az işlemde (30'dan az) sonuçlara güvenme.${part}</div></div>`;
   }
