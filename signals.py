@@ -755,6 +755,13 @@ def main():
     except Exception as exc:
         print(f"buyuk2 hatası (diğer sekmeler etkilenmedi): {exc}")
         payload["buyuk2"] = None
+    try:  # Ayakta (endeks zayıfken yükselen hisse); hata verirse diğer sekmeleri bozmasın
+        import ayakta
+        payload["ayakta"] = ayakta.ayakta_block(close, volume)
+        print("ayakta:", payload["ayakta"]["n"], "sinyal (son 6 ay),", payload["ayakta"]["n_live"], "canlı")
+    except Exception as exc:
+        print(f"ayakta hatası (diğer sekmeler etkilenmedi): {exc}")
+        payload["ayakta"] = None
     out.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
     counts = {}
