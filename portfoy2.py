@@ -2,6 +2,7 @@ import warnings
 import numpy as np
 import pandas as pd
 import buyuk as B
+import buyuk2 as B2
 
 warnings.filterwarnings("ignore")
 
@@ -11,7 +12,6 @@ CD = B.PARAM["cooldown"]
 N = 20
 C1 = 0.004                      # tek yon %0,4 = gidis-donus %0,8
 BOLUM = pd.Timestamp("2024-01-01")
-DN_ESIK = 70
 TOHUMLAR = [0, 1, 2, 3, 4]
 
 
@@ -61,23 +61,13 @@ def indir(syms):
 
 
 def skorlar(close, xu):
-    """dn: endeks dusen gunlerinde son 120 gunde hissenin endekse gore
-    ortalama fazla getirisi, hisseler arasi yuzdelik (0-100).
+    """dn: buyuk2.py ile AYNI dayaniklilik yuzdeligi (0-100).
     rs: 60 gun getiri - endeks 60 gun getiri. dv: dusuk oynaklik (60g std, eksi)."""
+    _, dr = B2.dayaniklilik(close, xu, B2.PARAM["window"])
     r = close.pct_change()
-    ri = xu.pct_change()
-    down = (ri < 0).astype(float)
-    ok = r.notna().astype(float).mul(down, axis=0)
-    num = r.fillna(0).mul(down, axis=0).rolling(120, min_periods=60).sum()
-    den = ok.rolling(120, min_periods=60).sum()
-    avg = (num / den).where(den >= 30)
-    inum = (ri.fillna(0) * down).rolling(120, min_periods=60).sum()
-    iden = down.rolling(120, min_periods=60).sum()
-    exc = avg.sub(inum / iden, axis=0)
-    dn = exc.rank(axis=1, pct=True) * 100
     rs = close.pct_change(60).sub(xu.pct_change(60), axis=0)
     dv = -(r.rolling(60).std())
-    return {"dn": dn.to_numpy(), "rs": rs.to_numpy(), "dv": dv.to_numpy()}
+    return {"dn": (dr * 100).to_numpy(), "rs": rs.to_numpy(), "dv": dv.to_numpy()}
 
 
 def olaylar(C, O, ii, jj, c, sk):
@@ -107,15 +97,13 @@ def olaylar(C, O, ii, jj, c, sk):
     return ev
 
 
-def simule(ev, C, O, c, anahtar=None, tohum=None, atla=None, filtre=None):
+def simule(ev, C, O, c, anahtar=None, tohum=None, atla=None):
     T = C.shape[0]
     Cf = pd.DataFrame(C).ffill().to_numpy()
     rng = np.random.default_rng(tohum) if tohum is not None else None
     byE = {}
     for i, v in enumerate(ev):
         if atla is not None and i in atla:
-            continue
-        if filtre is not None and not filtre(v):
             continue
         byE.setdefault(v["e"], []).append(v)
     if not byE:
@@ -193,38 +181,41 @@ def calistir(close, opn, vol, xu):
     C = close.to_numpy()
     O = opn.to_numpy()
     idx = close.index
-    mask = B.ozellikler(close, vol)
-    ii, jj = B.sinyaller(mask, CD)
+    bh = B.ozellikler(close, vol)
     sk = skorlar(close, xu)
-    ev = olaylar(C, O, ii, jj, C1, sk)
-    print("sonuclanan sinyal:", len(ev))
-    if len(ev) < 30:
+    dn_ok = np.nan_to_num(sk["dn"] / 100.0, nan=0.0) >= B2.PARAM["dn_min"]
+    ii, jj = B.sinyaller(bh, CD)
+    ii2, jj2 = B.sinyaller(bh & dn_ok, CD)
+    evs = {"BH": olaylar(C, O, ii, jj, C1, sk),
+           "BH2": olaylar(C, O, ii2, jj2, C1, sk)}
+    print("sonuclanan sinyal: BH", len(evs["BH"]), "| BH2", len(evs["BH2"]))
+    if len(evs["BH"]) < 30 or len(evs["BH2"]) < 10:
         print("sinyal cok az, durdu")
         return
-    tend = max(v["x"] for v in ev)
-    rets = np.array([v["ret"] for v in ev])
-    top3 = set(np.argsort(rets)[::-1][:max(1, int(len(ev) * 0.03))].tolist())
-    dnv = np.array([v["dn"] for v in ev])
-    gec = int(np.sum(np.isfinite(dnv) & (dnv >= DN_ESIK)))
-    print(f"dn>={DN_ESIK} sartini gecen sinyal: {gec}/{len(ev)}")
+    tend = max(v["x"] for e in evs.values() for v in e)
+    top3 = {}
+    for ad, e in evs.items():
+        rets = np.array([v["ret"] for v in e])
+        top3[ad] = set(np.argsort(rets)[::-1][:max(1, int(len(e) * 0.03))].tolist())
 
-    f_dn = lambda v: np.isfinite(v["dn"]) and v["dn"] >= DN_ESIK
     varyant = [
-        ("BH rastgele sira (taban)", dict(tohumlar=TOHUMLAR)),
-        ("BH2* (dn>=70) rastgele", dict(tohumlar=TOHUMLAR, filtre=f_dn)),
-        ("BH sirala: dayaniklilik", dict(anahtar="dn")),
-        ("BH sirala: goreceli guc", dict(anahtar="rs")),
-        ("BH sirala: dusuk oynaklik", dict(anahtar="dv")),
-        ("BH2* + sirala dayaniklilik", dict(anahtar="dn", filtre=f_dn)),
+        ("BH rastgele sira (taban)", "BH", dict(tohumlar=TOHUMLAR)),
+        ("BH2 rastgele sira", "BH2", dict(tohumlar=TOHUMLAR)),
+        ("BH sirala: dayaniklilik", "BH", dict(anahtar="dn")),
+        ("BH sirala: goreceli guc", "BH", dict(anahtar="rs")),
+        ("BH sirala: dusuk oynaklik", "BH", dict(anahtar="dv")),
+        ("BH2 sirala: dayaniklilik", "BH2", dict(anahtar="dn")),
+        ("BH2 sirala: goreceli guc", "BH2", dict(anahtar="rs")),
     ]
     sonuc = {}
     print("\n=== PORTFOY N=20, ertesi acilis girisi, maliyet gidis-donus %0,8 ===")
     print("(yillik % / max dusus %; tum = 2021-2026; d1 = 2021-23; d2 = 2024-26;")
-    print(" top3yok = en iyi %3 islem cikarilinca tum donem yillik %)")
-    for ad, kw in varyant:
-        r = kos(ev, C, O, idx, tend, **kw)
-        r3 = kos(ev, C, O, idx, tend, atla=top3, **kw)
-        if r is None:
+    print(" top3yok = o sinyal listesinin en iyi %3 islemi cikarilinca tum donem yillik %)")
+    for ad, ek, kw in varyant:
+        e = evs[ek]
+        r = kos(e, C, O, idx, tend, **kw)
+        r3 = kos(e, C, O, idx, tend, atla=top3[ek], **kw)
+        if r is None or r3 is None:
             continue
         sonuc[ad] = (r, r3)
         print(f"{ad}\n   tum {r[0]:.0f}/{r[1]:.0f} | d1 {r[2]:.0f}/{r[3]:.0f} | "
@@ -234,7 +225,7 @@ def calistir(close, opn, vol, xu):
     base = sonuc.get("BH rastgele sira (taban)")
     if base is None:
         return
-    print("\n=== KARAR (taban = rastgele sira) ===")
+    print("\n=== KARAR (taban = BH rastgele sira) ===")
     print("kabul adayi: d1 ve d2 yillik tabandan yuksek VE top3yok tabandan yuksek")
     for ad, (r, r3) in sonuc.items():
         if ad.startswith("BH rastgele"):
