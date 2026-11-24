@@ -1,6 +1,6 @@
 """KAP'tan pay geri alim kayitlarini toplar.
 
-Gunluk pencerelerle (saniyede 1 istek) gecmise dogru tarar ve su konulardaki kayitlari
+Gunluk pencerelerle gecmise dogru tarar ve su konulardaki kayitlari
 kap_geri_alim_kayit.csv dosyasina yazar:
   - "Paylarin Geri Alinmasina Iliskin Bildirim" (program baslangici, gunluk geri alim
     islemleri, program sonlandirilmasi)
@@ -8,7 +8,10 @@ kap_geri_alim_kayit.csv dosyasina yazar:
 Asama (program / gunluk islem / sonlandirma / elden cikarma) baslik (summary) alanindan
 sonraki adimda ayrilir; burada sadece ham kayit toplanir ve ozet sayilar yazilir.
 
-Kullanim: python kap_geri_alim_topla.py [--bas 2023-11-01] [--sure-dk 60]
+HTTP 429 (hiz siniri) gelirse bekleyip ayni gunu tekrar dener; alinamayan gunleri
+kap_geri_alim_alinamayan.txt dosyasina yazar.
+
+Kullanim: python kap_geri_alim_topla.py [--bas 2023-11-01] [--sure-dk 130]
 Yatirim tavsiyesi degildir.
 """
 import argparse
@@ -46,11 +49,28 @@ def tur(r):
     return "diger"
 
 
+def gun_al(s, iso, durum):
+    """Bir gunun kayitlarini al. HTTP 429'da bekleyip tekrar dener, bekleme suresini kalici artirir."""
+    for deneme in range(1, 7):
+        junk = []
+        data = kp.fetch_window(s, iso, iso, junk)
+        if data is not None:
+            return data, ""
+        son = junk[-1] if junk else ""
+        if "429" in son:
+            durum["bekle"] = min(durum["bekle"] + 0.5, 4.0)
+            durum["n429"] += 1
+            time.sleep(30 * deneme)
+        else:
+            time.sleep(3.0 * deneme)
+    return None, son
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--bas", default="2023-11-01")
     ap.add_argument("--out", default="kap_geri_alim_kayit.csv")
-    ap.add_argument("--sure-dk", type=int, default=60)
+    ap.add_argument("--sure-dk", type=int, default=130)
     args = ap.parse_args()
 
     s = requests.Session()
@@ -71,6 +91,8 @@ def main():
     toplam, hata, yazilan = 0, 0, 0
     turler, ozetler = Counter(), Counter()
     en_eski = None
+    durum = {"bekle": 1.5, "n429": 0}
+    alinamayan = []
     with open(args.out, "w", newline="", encoding="utf-8-sig") as fh:
         w = csv.writer(fh)
         w.writerow(["yayin", "kodlar", "ad", "baslik", "konu", "no", "tur"])
@@ -78,16 +100,13 @@ def main():
             if time.time() - t0 > args.sure_dk * 60:
                 print(f"SURE LIMITI: {n - 1}/{len(gunler)} gun tarandi, en eski tarih {gunler[n - 2]}")
                 break
-            time.sleep(1.0)
+            time.sleep(durum["bekle"])
             iso = g.isoformat()
-            junk = []
-            data = kp.fetch_window(s, iso, iso, junk)
-            if data is None:
-                time.sleep(3.0)
-                data = kp.fetch_window(s, iso, iso, junk)
+            data, son = gun_al(s, iso, durum)
             if data is None:
                 hata += 1
-                print(f"  {iso}: alinamadi {junk[-1:] if junk else ''}")
+                alinamayan.append(iso)
+                print(f"  {iso}: alinamadi {son}")
                 continue
             toplam += len(data)
             en_eski = iso
@@ -102,9 +121,15 @@ def main():
                     yazilan += 1
             if n % 50 == 0:
                 print(f"  {n}/{len(gunler)} gun ({iso}), toplam {toplam} kayit, konuya uyan {yazilan}, "
-                      f"hata {hata}, gecen {int((time.time() - t0) / 60)} dk")
+                      f"hata {hata}, 429 sayisi {durum['n429']}, bekleme {durum['bekle']}s, "
+                      f"gecen {int((time.time() - t0) / 60)} dk")
     print(f"\nBitti: {toplam} kayit tarandi, konuya uyan {yazilan}, alinamayan gun {hata}, "
           f"en eski taranan gun {en_eski} -> {args.out}")
+    with open("kap_geri_alim_alinamayan.txt", "w", encoding="utf-8") as fh:
+        fh.write("\n".join(alinamayan))
+    print(f"429 sayisi {durum['n429']}, son bekleme {durum['bekle']}s, alinamayan gun {len(alinamayan)}")
+    if alinamayan:
+        print("Alinamayan gunler (ilk 15):", ", ".join(alinamayan[:15]))
     print("\nTur sayilari:")
     for k, v in turler.most_common():
         print(f"  {v} x {k}")
