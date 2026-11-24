@@ -1,0 +1,29 @@
+name: Filtre BH2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  filtre:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Paketleri kur
+        run: pip install numpy pandas yfinance
+
+      - name: Filtre analizini calistir
+        run: python filtre_bh2.py
+
+      - name: CSV'yi sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: filtre_bh2_csv
+          path: filtre_bh2.csv
+          if-no-files-found: ignore
