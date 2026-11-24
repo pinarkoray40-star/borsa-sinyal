@@ -5,7 +5,7 @@ on:
 jobs:
   calistir:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 160
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -13,11 +13,13 @@ jobs:
           python-version: "3.12"
       - run: pip install requests
       - name: KAP geri alim kayitlarini topla
-        run: python kap_geri_alim_topla.py --bas 2023-11-01 --sure-dk 60
+        run: python kap_geri_alim_topla.py --bas 2023-11-01 --sure-dk 130
       - name: Sonucu sakla
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: kap-geri-alim-kayit
-          path: kap_geri_alim_kayit.csv
+          path: |
+            kap_geri_alim_kayit.csv
+            kap_geri_alim_alinamayan.txt
           if-no-files-found: ignore
