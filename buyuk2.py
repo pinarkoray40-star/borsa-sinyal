@@ -92,7 +92,8 @@ def buyuk2_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = 
             "diff": round(float(cur) - b, 2) if b is not None else None,
             "live": d >= P["live_from"], "dnr": int(round(float(DR[p, j]) * 100)), "path": seen,
         })
-    entries.sort(key=lambda e: (e["date"], e["symbol"]), reverse=True)
+    # Yeni tarih önce; aynı gün içinde dayanıklılık sırası (dnr) yüksek olan üstte
+    entries.sort(key=lambda e: (e["date"], e["dnr"], e["symbol"]), reverse=True)
 
     done = [e for e in entries if e["st"] != "açık"]
     opn = [e for e in entries if e["st"] == "açık"]
