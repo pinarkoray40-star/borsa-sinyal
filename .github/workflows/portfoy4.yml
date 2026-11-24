@@ -1,0 +1,21 @@
+name: Portfoy 4
+
+on:
+  workflow_dispatch:
+
+jobs:
+  portfoy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Paketleri kur
+        run: pip install numpy pandas yfinance
+
+      - name: Portfoy 4 calistir
+        run: python portfoy4.py
