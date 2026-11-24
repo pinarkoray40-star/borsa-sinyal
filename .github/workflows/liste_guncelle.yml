@@ -1,0 +1,39 @@
+name: Liste guncelle
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Dosyayi degistir (kapali = sadece rapor)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  liste:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Paketleri kur
+        run: pip install numpy pandas yfinance borsapy
+
+      - name: Listeyi kontrol et
+        env:
+          APPLY: ${{ inputs.apply && '1' || '0' }}
+        run: python liste_guncelle.py
+
+      - name: Degisiklik varsa kaydet
+        if: ${{ inputs.apply }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add bist_symbols.txt
+          git diff --cached --quiet || (git commit -m "BIST hisse listesi guncellendi" && git push)
