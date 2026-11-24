@@ -1,6 +1,8 @@
 name: Liste guncelle
 
 on:
+  schedule:
+    - cron: "0 5 * * 1"
   workflow_dispatch:
     inputs:
       apply:
@@ -27,13 +29,13 @@ jobs:
 
       - name: Listeyi kontrol et
         env:
-          APPLY: ${{ inputs.apply && '1' || '0' }}
+          APPLY: ${{ (github.event_name == 'schedule' || inputs.apply) && '1' || '0' }}
         run: python liste_guncelle.py
 
       - name: Degisiklik varsa kaydet
-        if: ${{ inputs.apply }}
+        if: ${{ github.event_name == 'schedule' || inputs.apply }}
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add bist_symbols.txt
-          git diff --cached --quiet || (git commit -m "BIST hisse listesi guncellendi" && git push)
+          git diff --cached --quiet || (git commit -m "BIST hisse listesi guncellendi" && git pull --rebase && git push)
