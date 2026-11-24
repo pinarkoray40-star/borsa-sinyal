@@ -1,0 +1,23 @@
+name: KAP geri alim topla
+on:
+  workflow_dispatch:
+
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - name: KAP geri alim kayitlarini topla
+        run: python kap_geri_alim_topla.py --bas 2023-11-01 --sure-dk 60
+      - name: Sonucu sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kap-geri-alim-kayit
+          path: kap_geri_alim_kayit.csv
+          if-no-files-found: ignore
