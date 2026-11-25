@@ -1,0 +1,39 @@
+name: Geri alim BH2
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Paketleri kur
+        run: pip install borsapy yfinance pandas numpy requests
+      - name: Son toplama kaydini indir
+        run: |
+          RUN_ID=$(gh run list --workflow "KAP geri alim topla" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          echo "Kullanilan toplama kosusu: $RUN_ID"
+          gh run download "$RUN_ID" -n kap-geri-alim-kayit
+          ls -la kap_geri_alim_*
+      - name: Geri alim + BH2 testi
+        run: python geri_alim_bh2.py
+      - name: Sonuclari sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: geri-alim-bh2-sonuc
+          path: |
+            geri_alim_bh2_rapor.txt
+            geri_alim_bh2_islemler.csv
+          if-no-files-found: ignore
