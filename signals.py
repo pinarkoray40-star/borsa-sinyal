@@ -755,6 +755,14 @@ def main():
     except Exception as exc:
         print(f"buyuk2 hatası (diğer sekmeler etkilenmedi): {exc}")
         payload["buyuk2"] = None
+    try:  # Onaylı (Büyük Hareket 2 + onaylı giriş); hata verirse diğer sekmeleri bozmasın
+        import onay
+        payload["onay"] = onay.onay_block(close, volume)
+        print("onay:", payload["onay"]["n"], "onaylı giriş (son 6 ay),", payload["onay"]["n_live"], "canlı,",
+              payload["onay"]["stats"]["skipped"], "elenen,", payload["onay"]["stats"]["pending"], "onay bekleyen")
+    except Exception as exc:
+        print(f"onay hatası (diğer sekmeler etkilenmedi): {exc}")
+        payload["onay"] = None
     try:  # Ayakta (endeks zayıfken yükselen hisse); hata verirse diğer sekmeleri bozmasın
         import ayakta
         payload["ayakta"] = ayakta.ayakta_block(close, volume)
