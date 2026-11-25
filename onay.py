@@ -5,8 +5,9 @@ Sinyal: Büyük Hareket 2 (buyuk2.py) ile AYNI sinyal. Fark sadece giriş zaman�
   Sinyal gününden 'confirm' işlem günü sonra kapanış, sinyal günü kapanışının ÜSTÜNDEYSE giriş = o günün kapanışı.
   Değilse sinyal atlanır (girilmez).
 İşlem kuralı buyuk.py ile aynı: izleyen stop %25, 84. işlem günü süre dolar; sayım giriş gününden başlar. Hepsi kapanış fiyatıyla.
-Atlanan sinyaller için "sinyal günü girseydik ne olurdu" ayrıca hesaplanır (skip_* istatistikleri):
-bu, onayın gerçekten kötü işlemleri eleyip eleyemediğini canlı gösterir.
+Karşılaştırma için iki ek hesap yapılır:
+  skip_*: Atlanan sinyaller, onaylıların giriş günüyle AYNI günden (onay günü kapanışı) girilseydi ne olurdu (adil kıyas).
+  bh2_* : Aynı sinyallerin hepsine sinyal günü kapanışından girilseydi (Büyük Hareket 2 kuralı) ne olurdu.
 buyuk.py ve buyuk2.py'ye dokunmaz; onların fonksiyonlarını içe aktarıp kullanır.
 """
 import numpy as np
@@ -41,7 +42,7 @@ def onay_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = PA
     first = T - 1 - P["track"]
     c = int(P["confirm"])
 
-    entries, pending, skip_pnl = [], [], []
+    entries, pending, skip_pnl, bh2_pnl = [], [], [], []
     n_sig = n_skip = 0
     for p, j in zip(ii, jj):
         if p < first:
@@ -52,6 +53,11 @@ def onay_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = PA
         n_sig += 1
         d_sig = f"{close.index[p]:%Y-%m-%d}"
         dnr = int(round(float(DR[p, j]) * 100))
+        # Kıyas: aynı sinyale sinyal günü kapanışından girilseydi (Büyük Hareket 2 kuralı)
+        pb = (C[p + 1:p + P["hold"] + 1, j] / sig - 1) * 100
+        stb, kb, xrb, _ = BY.takip(pb, P["sl"], P["hold"])
+        if stb != "açık" and xrb is not None:
+            bh2_pnl.append(float(xrb))
         q = p + c
         if q > T - 1:  # onay günü henüz gelmedi
             pending.append({"symbol": cols[j].replace(".IS", ""), "date": d_sig,
@@ -60,11 +66,12 @@ def onay_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = PA
         entry = float(C[q, j])
         if not np.isfinite(entry) or entry <= 0 or entry <= sig:
             n_skip += 1
-            # Atlanan sinyal: sinyal günü girseydik (BH2 kuralı) sonuç ne olurdu?
-            path0 = (C[p + 1:p + P["hold"] + 1, j] / sig - 1) * 100
-            st0, k0, xr0, _ = BY.takip(path0, P["sl"], P["hold"])
-            if st0 != "açık" and xr0 is not None:
-                skip_pnl.append(float(xr0))
+            # Atlanan sinyal: onaylılarla AYNI günden (onay günü kapanışı) girseydik sonuç ne olurdu?
+            if np.isfinite(entry) and entry > 0:
+                path0 = (C[q + 1:q + P["hold"] + 1, j] / entry - 1) * 100
+                st0, k0, xr0, _ = BY.takip(path0, P["sl"], P["hold"])
+                if st0 != "açık" and xr0 is not None:
+                    skip_pnl.append(float(xr0))
             continue
         path = (C[q + 1:q + P["hold"] + 1, j] / entry - 1) * 100
         st, k, xr, peak = BY.takip(path, P["sl"], P["hold"])
@@ -107,6 +114,11 @@ def onay_block(close: pd.DataFrame, volume: pd.DataFrame, now=None, P: dict = PA
         stats.update({"skip_done": len(s), "skip_avg": round(float(s.mean()), 2),
                       "skip_median": round(float(np.median(s)), 2),
                       "skip_win": round(float((s > 0).mean()) * 100, 1)})
+    if bh2_pnl:
+        h = np.array(bh2_pnl)
+        stats.update({"bh2_done": len(h), "bh2_avg": round(float(h.mean()), 2),
+                      "bh2_median": round(float(np.median(h)), 2),
+                      "bh2_win": round(float((h > 0).mean()) * 100, 1)})
     BY.kiyas_istat(done, opn, stats)
     return {"params": P, "last_bar": f"{close.index[-1]:%Y-%m-%d}", "dropped_partial": dropped,
             "universe": int(close.shape[1]), "n": len(entries), "n_live": sum(e["live"] for e in entries),
