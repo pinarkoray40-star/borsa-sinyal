@@ -92,6 +92,7 @@
     <button role="tab" id="t-dip3" aria-selected="false">Dip OBV 3</button>
     <button role="tab" id="t-buyuk" aria-selected="false">Büyük Hareket</button>
     <button role="tab" id="t-buyuk2" aria-selected="false">Büyük Hareket 2</button>
+    <button role="tab" id="t-onay" aria-selected="false">Onaylı</button>
   </div>
 
   <section id="p-dip">
@@ -126,6 +127,7 @@
 
   <section id="p-buyuk" hidden></section>
   <section id="p-buyuk2" hidden></section>
+  <section id="p-onay" hidden></section>
 
   <footer>Dip OBV sekmelerinde ve Büyük Hareket sekmelerinde yazan tüm kayıtlar geçmişe dayalı tahmindir; geçmiş performans geleceği garanti etmez. Yahoo Finance verisi ~15 dk gecikmelidir. Getiriler komisyonsuzdur, güncel hisse listesi kullanıldığı için geçmiş sonuçlar iyimser olabilir. Yatırım tavsiyesi değildir.</footer>
 </div>
@@ -233,5 +235,6 @@ setInterval(() => { if (!document.querySelector("details[open]")) load(); }, 5 *
 </script>
 <script src="buyuk.js"></script>
 <script src="buyuk2.js"></script>
+<script src="onay.js"></script>
 </body>
 </html>
