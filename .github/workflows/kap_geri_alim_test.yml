@@ -1,0 +1,42 @@
+name: KAP geri alim testi
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Paketleri kur
+        run: pip install borsapy pandas numpy requests
+      - name: Son toplama kaydini indir
+        run: |
+          RUN_ID=$(gh run list --workflow "KAP geri alim topla" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          echo "Kullanilan toplama kosusu: $RUN_ID"
+          gh run download "$RUN_ID" -n kap-geri-alim-kayit
+          ls -la kap_geri_alim_*
+          test -f kap_geri_alim_alinamayan.txt || (echo "HATA: eski surum kayit (alinamayan.txt yok), toplamayi yeniden calistir" && exit 1)
+          echo "Alinamayan gun sayisi: $(grep -c . kap_geri_alim_alinamayan.txt || true)"
+      - name: Geri alim testi
+        run: python kap_geri_alim_test.py
+      - name: Sonuclari sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kap-geri-alim-sonuc
+          path: |
+            kap_geri_alim_rapor.txt
+            kap_geri_alim_olaylar.csv
+            kap_geri_alim_guncel.csv
+          if-no-files-found: ignore
