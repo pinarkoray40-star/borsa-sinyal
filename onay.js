@@ -69,14 +69,18 @@
         <tr><td>Fark (puan)</td><td><b class="${sgn(S.diff_avg)}">${pct(S.diff_avg, 1)}</b></td></tr>
         <tr><td>Evreni geçen işlem</td><td>%${nf(S.beat, 0)}</td></tr>`}</table>` : "";
     const skip = S.skipped
-      ? `<div class="edge"><b>Elenen sinyaller:</b> ${S.n_signals} sinyalden ${S.skipped} tanesi onay vermedi, girilmedi.${S.skip_done ? ` Bunlar sinyal günü girilseydi (Büyük Hareket 2 kuralı) sonuçlanan ${S.skip_done} işlemin ortalaması ${pct(S.skip_avg, 1)}, medyanı ${pct(S.skip_median, 1)}, kazanan oranı %${nf(S.skip_win, 0)} olurdu${S.n_done ? `; onaylı girilen kapanmış işlemlerin ortalaması ${pct(S.avg, 1)}, medyanı ${pct(S.median, 1)}` : ""}. Elenenler girilenlerden belirgin kötüyse onay işe yarıyor demektir; benzerse sadece iyi işlemleri de kaçırıyoruz demektir.` : ""}</div>`
+      ? `<div class="edge"><b>Elenen sinyaller:</b> ${S.n_signals} sinyalden ${S.skipped} tanesi onay vermedi, girilmedi.${S.skip_done ? ` Bunlar onaylılarla aynı günden (onay günü kapanışından) girilseydi sonuçlanan ${S.skip_done} işlemin ortalaması ${pct(S.skip_avg, 1)}, medyanı ${pct(S.skip_median, 1)}, kazanan oranı %${nf(S.skip_win, 0)} olurdu${S.n_done ? `; onaylı girilen kapanmış işlemlerin ortalaması ${pct(S.avg, 1)}, medyanı ${pct(S.median, 1)}, kazanan oranı %${nf(S.win, 0)}` : ""}. Elenenler girilenlerden belirgin kötüyse onay işe yarıyor demektir; benzerse sadece iyi işlemleri de kaçırıyoruz demektir.` : ""}</div>`
+      : "";
+    const bh2 = S.bh2_done
+      ? `<div class="edge"><b>Asıl kıyas:</b> aynı sinyallerin hepsine sinyal günü kapanışından girseydik (Büyük Hareket 2 kuralı), sonuçlanan ${S.bh2_done} işlemin ortalaması ${pct(S.bh2_avg, 1)}, medyanı ${pct(S.bh2_median, 1)}, kazanan oranı %${nf(S.bh2_win, 0)} olurdu${S.n_done ? `; onaylı giriş: ortalama ${pct(S.avg, 1)}, medyan ${pct(S.median, 1)}, kazanan %${nf(S.win, 0)}` : ""}. Onaylı giriş bunlardan belirgin iyiyse bekleme işe yarıyor demektir; benzerse ya da kötüyse gerek yok.</div>`
       : "";
     el("onstats").innerHTML = `<div class="card"><div class="grid2">
         <div>Son 6 ayda onaylı giriş<b>${D.n}</b>canlı: ${D.n_live} · kapanan: ${S.n_done}</div>
         <div>Açık işlemler<b class="${sgn(S.open_avg)}">${S.n_open ? pct(S.open_avg, 1) : "—"}</b>${S.n_open ? S.n_open + " işlem, ortalama şu anki durum" + (S.open_bench == null ? "" : `<br>evren aynı sürede ${pct(S.open_bench, 1)}, fark <span class="${sgn(S.open_diff)}">${pct(S.open_diff, 1)}</span>`) : "açık işlem yok"}</div></div>
       ${done}
       ${skip}
-      <div class="edge">Teyit süresi: sinyalden ${P.confirm} işlem günü sonra. Kapanan işlemler izleyen stop ya da 84. günle bitmiş olanlardır. Evren = işlem hacmi en düşük %30 hariç tüm hisselerin, aynı gün girişle aynı sürede eşit ağırlıklı ortalaması. Az işlemde (30'dan az) sonuçlara güvenme.${part}</div></div>`;
+      ${bh2}
+      <div class="edge">Teyit süresi: sinyalden ${P.confirm} işlem günü sonra. Kapanan işlemler izleyen stop ya da 84. günle bitmiş olanlardır. Evren = işlem hacmi en düşük %30 hariç tüm hisselerin, aynı gün girişle aynı sürede eşit ağırlıklı ortalaması. Az işlemde (30'dan az) sonuçlara güvenme. Tek bir büyük kazanan ortalamayı çok değiştirir, medyana da bak.${part}</div></div>`;
   }
 
   el("onchips").addEventListener("click", e => { const t = e.target.dataset.t; if (t) { B.chip = t; B.shown = 30; render(); } });
