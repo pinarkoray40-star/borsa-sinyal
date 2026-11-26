@@ -1,0 +1,21 @@
+name: Tavan kombi
+
+on:
+  workflow_dispatch:
+
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Paketleri kur
+        run: pip install yfinance pandas numpy
+
+      - name: Tavan kombi testini calistir
+        run: python tavan_kombi.py
