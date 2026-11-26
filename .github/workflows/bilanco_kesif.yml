@@ -1,0 +1,21 @@
+name: Bilanco kesif
+
+on:
+  workflow_dispatch:
+
+jobs:
+  calistir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Paketleri kur
+        run: pip install requests yfinance borsapy pandas
+
+      - name: Bilanco kesfini calistir
+        run: python bilanco_kesif.py
