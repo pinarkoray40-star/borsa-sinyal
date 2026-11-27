@@ -1,0 +1,30 @@
+name: Bilanco saglam
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  saglam:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Paketler
+        run: pip install pandas numpy yfinance
+
+      - name: Bilanco verisini indir
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download --name bilanco-veri --dir veri
+
+      - name: Saglamlik testi
+        run: python bilanco_saglam.py
