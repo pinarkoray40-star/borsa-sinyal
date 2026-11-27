@@ -1,0 +1,25 @@
+name: Sektor test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  calis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install yfinance pandas numpy
+      - name: Sektor tablosunu indir
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download --name sektor-veri --dir veri
+      - name: Sonuc
+        run: python sektor_test.py 2>&1 | grep -v -E "Failed download|No data found|HTTP Error|^$|^\['"
