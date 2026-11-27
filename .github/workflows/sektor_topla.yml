@@ -1,0 +1,21 @@
+name: Sektor topla
+
+on:
+  workflow_dispatch:
+
+jobs:
+  calis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install yfinance pandas
+      - name: Sektor tablosunu cek
+        run: python sektor_topla.py 2>&1 | grep -v -E "Failed download|No data found|^$"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sektor-veri
+          path: sektor.csv
