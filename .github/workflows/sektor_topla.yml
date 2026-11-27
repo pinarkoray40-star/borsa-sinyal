@@ -2,6 +2,11 @@ name: Sektor topla
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: write
 
 jobs:
   calis:
@@ -19,3 +24,9 @@ jobs:
         with:
           name: sektor-veri
           path: sektor.csv
+      - name: Degisiklik varsa kaydet
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add sektor.csv
+          git diff --staged --quiet || (git commit -m "Sektor tablosu guncellendi" && git push)
