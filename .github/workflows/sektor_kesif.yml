@@ -1,0 +1,17 @@
+name: Sektor kesif
+
+on:
+  workflow_dispatch:
+
+jobs:
+  calis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install yfinance pandas requests borsapy
+      - name: Sonuc
+        run: python sektor_kesif.py 2>&1 | grep -v -E "Failed download|No data found|^$"
