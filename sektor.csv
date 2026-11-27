@@ -1,0 +1,622 @@
+kod,sector,industry
+ACSEL,Basic Materials,Chemicals
+ADEL,Industrials,Business Equipment & Supplies
+ADESE,Real Estate,Real Estate - Diversified
+ADGYO,Real Estate,REIT - Residential
+AEFES,Consumer Defensive,Beverages - Non-Alcoholic
+AFYON,Basic Materials,Building Materials
+AGESA,Financial Services,Insurance - Diversified
+AGHOL,Industrials,Conglomerates
+AGROT,Industrials,Conglomerates
+AGYO,Real Estate,REIT - Retail
+AHGAZ,Utilities,Utilities - Regulated Gas
+AKBNK,Financial Services,Banks - Regional
+AKCNS,Basic Materials,Building Materials
+AKENR,Utilities,Utilities - Regulated Electric
+AKFGY,Real Estate,REIT - Hotel & Motel
+AKFYE,Utilities,Utilities - Renewable
+AKGRT,Financial Services,Insurance - Diversified
+AKMGY,Real Estate,REIT - Retail
+AKSA,Consumer Cyclical,Textile Manufacturing
+AKSEN,Utilities,Utilities - Independent Power Producers
+AKSGY,Real Estate,REIT - Diversified
+AKSUE,Utilities,Utilities - Renewable
+AKYHO,Industrials,Security & Protection Services
+ALARK,Industrials,Conglomerates
+ALBRK,Financial Services,Banks - Regional
+ALCAR,Industrials,Specialty Industrial Machinery
+ALCTL,Technology,Communication Equipment
+ALFAS,Technology,Solar
+ALGYO,Real Estate,REIT - Diversified
+ALKA,Basic Materials,Paper & Paper Products
+ALKIM,Basic Materials,Paper & Paper Products
+ALKLC,Consumer Defensive,Packaged Foods
+ALTNY,Industrials,Aerospace & Defense
+ALVES,Industrials,Electrical Equipment & Parts
+ANELE,Industrials,Engineering & Construction
+ANGEN,Healthcare,Medical Devices
+ANHYT,Financial Services,Insurance - Life
+ANSGR,Financial Services,Insurance - Diversified
+ARASE,Utilities,Utilities - Independent Power Producers
+ARCLK,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+ARDYZ,Technology,Information Technology Services
+ARENA,Technology,Electronics & Computer Distribution
+ARSAN,Industrials,Engineering & Construction
+ARZUM,Technology,Consumer Electronics
+ASELS,Industrials,Aerospace & Defense
+ASGYO,Real Estate,Real Estate - Development
+ASTOR,Industrials,Electrical Equipment & Parts
+ASUZU,Consumer Cyclical,Auto Manufacturers
+ATAGY,Real Estate,REIT - Diversified
+ATAKP,Consumer Defensive,Packaged Foods
+ATATP,Technology,Software - Infrastructure
+ATEKS,Consumer Cyclical,Textile Manufacturing
+ATLAS,Financial Services,Capital Markets
+ATSYH,Consumer Cyclical,Apparel Manufacturing
+AVGYO,Real Estate,REIT - Specialty
+AVHOL,Financial Services,Asset Management
+AVOD,Consumer Defensive,Packaged Foods
+AVPGY,Real Estate,Real Estate - Diversified
+AVTUR,Financial Services,Asset Management
+AYCES,Consumer Cyclical,Resorts & Casinos
+AYDEM,Utilities,Utilities - Renewable
+AYEN,Utilities,Utilities - Renewable
+AYES,Basic Materials,Steel
+AYGAZ,Utilities,Utilities - Regulated Gas
+AZTEK,Technology,Electronics & Computer Distribution
+BAGFS,Basic Materials,Agricultural Inputs
+BAKAB,Consumer Cyclical,Packaging & Containers
+BALAT,Consumer Cyclical,Auto Parts
+BANVT,Consumer Defensive,Packaged Foods
+BARMA,Consumer Cyclical,Packaging & Containers
+BASCM,Basic Materials,Building Materials
+BASGZ,Utilities,Utilities - Regulated Gas
+BAYRK,Consumer Cyclical,Footwear & Accessories
+BEGYO,Real Estate,Real Estate - Development
+BERA,Industrials,Conglomerates
+BEYAZ,Industrials,Rental & Leasing Services
+BFREN,Consumer Cyclical,Auto Parts
+BIENY,Industrials,Building Products & Equipment
+BIGCH,Consumer Cyclical,Restaurants
+BIMAS,Consumer Defensive,Grocery Stores
+BINHO,Industrials,Conglomerates
+BIOEN,Utilities,Utilities - Renewable
+BIZIM,Consumer Cyclical,Department Stores
+BJKAS,Communication Services,Entertainment
+BLCYT,Consumer Cyclical,Textile Manufacturing
+BMSCH,Basic Materials,Steel
+BMSTL,Basic Materials,Steel
+BNTAS,Consumer Cyclical,Packaging & Containers
+BOBET,Basic Materials,Building Materials
+BORLS,Industrials,Rental & Leasing Services
+BORSK,Consumer Defensive,Confectioners
+BOSSA,Consumer Cyclical,Textile Manufacturing
+BRISA,Consumer Cyclical,Auto Parts
+BRKO,Consumer Cyclical,Textile Manufacturing
+BRKSN,Industrials,Conglomerates
+BRKVY,Financial Services,Asset Management
+BRLSM,Industrials,Engineering & Construction
+BRMEN,Consumer Cyclical,Textile Manufacturing
+BRSAN,Basic Materials,Steel
+BRYAT,Basic Materials,Steel
+BSOKE,Basic Materials,Building Materials
+BTCIM,Basic Materials,Building Materials
+BUCIM,Basic Materials,Building Materials
+BURCE,Industrials,Specialty Industrial Machinery
+BURVA,Industrials,Metal Fabrication
+BVSAN,Industrials,Farm & Heavy Construction Machinery
+BYDNR,Consumer Cyclical,Restaurants
+CANTE,Utilities,Utilities - Independent Power Producers
+CASA,Consumer Cyclical,Specialty Retail
+CATES,Utilities,Utilities - Independent Power Producers
+CCOLA,Consumer Defensive,Beverages - Non-Alcoholic
+CELHA,Industrials,Metal Fabrication
+CEMAS,Industrials,Metal Fabrication
+CEMTS,Basic Materials,Steel
+CEOEM,Industrials,Specialty Business Services
+CIMSA,Basic Materials,Building Materials
+CLEBI,Industrials,Airports & Air Services
+CMBTN,Basic Materials,Building Materials
+CMENT,Basic Materials,Building Materials
+CONSE,Utilities,Utilities - Renewable
+COSMO,Financial Services,Asset Management
+CRDFA,Financial Services,Credit Services
+CRFSA,Consumer Defensive,Grocery Stores
+CUSAN,Industrials,Building Products & Equipment
+CVKMD,Basic Materials,Other Industrial Metals & Mining
+CWENE,Technology,Solar
+DAGI,Consumer Cyclical,Apparel Manufacturing
+DAPGM,Real Estate,Real Estate - Development
+DARDL,Consumer Defensive,Packaged Foods
+DENGE,Industrials,Integrated Freight & Logistics
+DERHL,Consumer Cyclical,Apparel Manufacturing
+DERIM,Consumer Cyclical,Footwear & Accessories
+DESA,Consumer Cyclical,Footwear & Accessories
+DESPC,Technology,Electronics & Computer Distribution
+DEVA,Healthcare,Drug Manufacturers - Specialty & Generic
+DGATE,Technology,Electronics & Computer Distribution
+DGGYO,Real Estate,REIT - Diversified
+DGNMO,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+DIRIT,Consumer Cyclical,Textile Manufacturing
+DITAS,Consumer Cyclical,Auto Parts
+DMRGD,Consumer Defensive,Packaged Foods
+DMSAS,Industrials,Metal Fabrication
+DNISI,Basic Materials,Specialty Chemicals
+DOAS,Consumer Cyclical,Auto & Truck Dealerships
+DOCO,Industrials,Airports & Air Services
+DOFER,Basic Materials,Steel
+DOGUB,Industrials,Building Products & Equipment
+DOHOL,Industrials,Conglomerates
+DOKTA,Basic Materials,Steel
+DURDO,Consumer Cyclical,Packaging & Containers
+DYOBY,Basic Materials,Specialty Chemicals
+DZGYO,Real Estate,REIT - Diversified
+ECILC,Healthcare,Drug Manufacturers - Specialty & Generic
+ECZYT,Industrials,Conglomerates
+EDATA,Technology,Information Technology Services
+EDIP,Real Estate,REIT - Diversified
+EGEEN,Consumer Cyclical,Auto Parts
+EGEGY,Real Estate,Real Estate - Development
+EGEPO,Healthcare,Medical Care Facilities
+EGGUB,Industrials,Marine Shipping
+EGPRO,Industrials,Building Products & Equipment
+EGSER,Basic Materials,Building Materials
+EKGYO,Real Estate,REIT - Residential
+EKIZ,Consumer Defensive,Household & Personal Products
+EKOS,Industrials,Electrical Equipment & Parts
+EKSUN,Consumer Defensive,Packaged Foods
+ELITE,Consumer Defensive,Beverages - Non-Alcoholic
+EMKEL,Industrials,Electrical Equipment & Parts
+EMNIS,Consumer Cyclical,Packaging & Containers
+ENERY,Utilities,Utilities - Regulated Gas
+ENJSA,Utilities,Utilities - Regulated Electric
+ENKAI,Industrials,Engineering & Construction
+ENSRI,Consumer Cyclical,Textile Manufacturing
+EPLAS,Industrials,Building Products & Equipment
+ERBOS,Industrials,Metal Fabrication
+ERCB,Basic Materials,Steel
+EREGL,Basic Materials,Steel
+ERSU,Consumer Defensive,Packaged Foods
+ESCAR,Industrials,Rental & Leasing Services
+ESCOM,Technology,Information Technology Services
+ESEN,Utilities,Utilities - Renewable
+ETILR,Consumer Cyclical,Restaurants
+ETYAT,Financial Services,Asset Management
+EUHOL,Financial Services,Capital Markets
+EUKYO,Financial Services,Asset Management
+EUPWR,Industrials,Electrical Equipment & Parts
+EUREN,Industrials,Building Products & Equipment
+EUYO,Financial Services,Asset Management
+EYGYO,Real Estate,REIT - Diversified
+FADE,Consumer Defensive,Packaged Foods
+FENER,Communication Services,Entertainment
+FLAP,Consumer Cyclical,Travel Services
+FMIZP,Consumer Cyclical,Auto Parts
+FONET,Healthcare,Health Information Services
+FORMT,Industrials,Building Products & Equipment
+FORTE,Technology,Software - Application
+FRIGO,Consumer Defensive,Packaged Foods
+FROTO,Consumer Cyclical,Auto Manufacturers
+FZLGY,Real Estate,REIT - Residential
+GARAN,Financial Services,Banks - Regional
+GARFA,Financial Services,Credit Services
+GEDIK,Financial Services,Capital Markets
+GEDZA,Basic Materials,Specialty Chemicals
+GENIL,Healthcare,Drug Manufacturers - Specialty & Generic
+GENTS,Basic Materials,Lumber & Wood Production
+GEREL,Industrials,Electrical Equipment & Parts
+GESAN,Industrials,Engineering & Construction
+GIPTA,Consumer Cyclical,Specialty Retail
+GLBMD,Financial Services,Capital Markets
+GLCVY,Financial Services,Asset Management
+GLRYH,Financial Services,Asset Management
+GLYHO,Industrials,Conglomerates
+GMTAS,,
+GOKNR,Consumer Defensive,Packaged Foods
+GOLTS,Basic Materials,Building Materials
+GOODY,Consumer Cyclical,Auto Parts
+GOZDE,Financial Services,Asset Management
+GRNYO,Financial Services,Asset Management
+GRSEL,Industrials,Railroads
+GSDDE,Industrials,Marine Shipping
+GSDHO,Industrials,Marine Shipping
+GSRAY,Communication Services,Entertainment
+GUBRF,Basic Materials,Agricultural Inputs
+GWIND,Utilities,Utilities - Renewable
+GZNMI,Consumer Cyclical,Travel Services
+HALKB,Financial Services,Banks - Regional
+HATEK,Consumer Cyclical,Textile Manufacturing
+HATSN,Industrials,Aerospace & Defense
+HDFGS,Financial Services,Asset Management
+HEDEF,Financial Services,Asset Management
+HEKTS,Basic Materials,Agricultural Inputs
+HKTM,Industrials,Specialty Industrial Machinery
+HLGYO,Real Estate,REIT - Diversified
+HTTBT,Technology,Software - Application
+HUBVC,Financial Services,Asset Management
+HUNER,Utilities,Utilities - Renewable
+HURGZ,Communication Services,Publishing
+ICBCT,Financial Services,Banks - Regional
+ICUGS,Financial Services,Asset Management
+IDGYO,Real Estate,REIT - Residential
+IEYHO,Consumer Cyclical,Textile Manufacturing
+IHAAS,Communication Services,Broadcasting
+IHEVA,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+IHGZT,Communication Services,Publishing
+IHLAS,Industrials,Conglomerates
+IHLGM,Real Estate,Real Estate - Diversified
+IHYAY,Communication Services,Publishing
+IMASM,Industrials,Specialty Industrial Machinery
+INDES,Technology,Electronics & Computer Distribution
+INFO,Financial Services,Capital Markets
+INGRM,Technology,Electronics & Computer Distribution
+INTEM,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+INVEO,Financial Services,Asset Management
+INVES,Financial Services,Asset Management
+ISATR,Financial Services,Banks - Regional
+ISBIR,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+ISBTR,Financial Services,Banks - Regional
+ISCTR,Financial Services,Banks - Regional
+ISDMR,Basic Materials,Steel
+ISFIN,Financial Services,Credit Services
+ISGSY,,
+ISGYO,Real Estate,REIT - Diversified
+ISKPL,Industrials,Specialty Business Services
+ISMEN,Financial Services,Capital Markets
+ISSEN,Consumer Cyclical,Packaging & Containers
+ISYAT,Financial Services,Asset Management
+IZENR,Utilities,Utilities - Independent Power Producers
+IZFAS,Consumer Defensive,Household & Personal Products
+IZINV,Industrials,Conglomerates
+IZMDC,Basic Materials,Steel
+JANTS,Consumer Cyclical,Auto Parts
+KAPLM,Consumer Cyclical,Packaging & Containers
+KAREL,Technology,Communication Equipment
+KARSN,Industrials,Farm & Heavy Construction Machinery
+KARTN,Consumer Cyclical,Packaging & Containers
+KATMR,Industrials,Farm & Heavy Construction Machinery
+KAYSE,Consumer Defensive,Confectioners
+KCAER,Basic Materials,Steel
+KCHOL,Industrials,Conglomerates
+KENT,Consumer Defensive,Confectioners
+KERVN,Consumer Cyclical,Textile Manufacturing
+KFEIN,Technology,Software - Application
+KGYO,Real Estate,REIT - Diversified
+KIMMR,Consumer Defensive,Grocery Stores
+KLGYO,Real Estate,REIT - Diversified
+KLKIM,Basic Materials,Specialty Chemicals
+KLMSN,Industrials,Specialty Industrial Machinery
+KLNMA,Financial Services,Banks - Regional
+KLRHO,Industrials,Conglomerates
+KLSER,Industrials,Building Products & Equipment
+KLSYN,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+KMPUR,Basic Materials,Specialty Chemicals
+KNFRT,Consumer Defensive,Packaged Foods
+KONKA,Basic Materials,Paper & Paper Products
+KONTR,Industrials,Conglomerates
+KONYA,Basic Materials,Building Materials
+KOPOL,Basic Materials,Specialty Chemicals
+KORDS,Consumer Cyclical,Textile Manufacturing
+KOTON,Consumer Cyclical,Apparel Manufacturing
+KRDMA,Basic Materials,Steel
+KRDMB,Basic Materials,Steel
+KRDMD,Basic Materials,Steel
+KRGYO,Real Estate,REIT - Residential
+KRONT,Technology,Software - Infrastructure
+KRPLS,Consumer Defensive,Household & Personal Products
+KRSTL,Consumer Defensive,Beverages - Non-Alcoholic
+KRTEK,Consumer Cyclical,Textile Manufacturing
+KRVGD,Consumer Defensive,Confectioners
+KSTUR,Consumer Cyclical,Resorts & Casinos
+KTLEV,Financial Services,Credit Services
+KTSKR,Consumer Defensive,Confectioners
+KUTPO,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+KUYAS,Real Estate,Real Estate Services
+KZBGY,Real Estate,REIT - Hotel & Motel
+KZGYO,,
+LIDER,Industrials,Rental & Leasing Services
+LIDFA,Financial Services,Credit Services
+LILAK,Consumer Defensive,Household & Personal Products
+LINK,Technology,Software - Application
+LKMNH,Healthcare,Medical Care Facilities
+LMKDC,Basic Materials,Building Materials
+LOGO,Technology,Software - Application
+LUKSK,Consumer Cyclical,Textile Manufacturing
+MAALT,Consumer Cyclical,Lodging
+MACKO,Communication Services,Internet Content & Information
+MAGEN,Utilities,Utilities - Renewable
+MAKIM,Industrials,Specialty Industrial Machinery
+MAKTK,Industrials,Tools & Accessories
+MANAS,Industrials,Electrical Equipment & Parts
+MARBL,Basic Materials,Building Materials
+MARTI,Consumer Cyclical,Lodging
+MAVI,Consumer Cyclical,Apparel Retail
+MEDTR,Healthcare,Medical Devices
+MEGAP,Basic Materials,Specialty Chemicals
+MEKAG,Basic Materials,Building Materials
+MEPET,Energy,Oil & Gas Refining & Marketing
+MERCN,Basic Materials,Specialty Chemicals
+MERIT,Consumer Cyclical,Resorts & Casinos
+MERKO,Consumer Defensive,Packaged Foods
+METRO,Financial Services,Asset Management
+MGROS,Consumer Defensive,Grocery Stores
+MIATK,Technology,Information Technology Services
+MMCAS,Industrials,Integrated Freight & Logistics
+MNDRS,Consumer Cyclical,Textile Manufacturing
+MNDTR,Consumer Cyclical,Packaging & Containers
+MOBTL,Technology,Electronics & Computer Distribution
+MPARK,Healthcare,Medical Care Facilities
+MRGYO,Real Estate,REIT - Diversified
+MRSHL,Basic Materials,Specialty Chemicals
+MSGYO,Real Estate,REIT - Diversified
+MTRKS,Financial Services,Financial Data & Stock Exchanges
+MTRYO,Financial Services,Asset Management
+MZHLD,Industrials,Conglomerates
+NATEN,Utilities,Utilities - Renewable
+NETAS,Technology,Communication Equipment
+NIBAS,Industrials,Engineering & Construction
+NTGAZ,Energy,Oil & Gas Midstream
+NTHOL,Consumer Cyclical,Travel Services
+NUGYO,Real Estate,REIT - Diversified
+NUHCM,Basic Materials,Building Materials
+OBAMS,Consumer Defensive,Packaged Foods
+OBASE,Technology,Software - Application
+ODAS,Utilities,Utilities - Regulated Electric
+ODINE,Technology,Software - Infrastructure
+OFSYM,Consumer Defensive,Packaged Foods
+ONCSM,Healthcare,Medical Devices
+ONRYT,Industrials,Aerospace & Defense
+ORCAY,Consumer Defensive,Packaged Foods
+ORGE,Industrials,Engineering & Construction
+ORMA,Basic Materials,Lumber & Wood Production
+OSMEN,Financial Services,Capital Markets
+OSTIM,Financial Services,Asset Management
+OTKAR,Consumer Cyclical,Auto Manufacturers
+OTTO,Financial Services,Asset Management
+OYAKC,Basic Materials,Building Materials
+OYAYO,Financial Services,Asset Management
+OYLUM,Consumer Defensive,Confectioners
+OYYAT,Financial Services,Capital Markets
+OZGYO,Real Estate,REIT - Residential
+OZKGY,Real Estate,REIT - Diversified
+OZRDN,Consumer Cyclical,Packaging & Containers
+OZSUB,Consumer Defensive,Farm Products
+PAGYO,Real Estate,REIT - Retail
+PAMEL,Utilities,Utilities - Renewable
+PAPIL,Industrials,Building Products & Equipment
+PARSN,Consumer Cyclical,Auto Parts
+PASEU,Industrials,Integrated Freight & Logistics
+PATEK,Technology,Information Technology Services
+PCILT,Communication Services,Advertising Agencies
+PEKGY,Real Estate,REIT - Diversified
+PENGD,Consumer Defensive,Packaged Foods
+PENTA,Technology,Electronics & Computer Distribution
+PETKM,Basic Materials,Chemicals
+PETUN,Consumer Defensive,Packaged Foods
+PGSUS,Industrials,Airlines
+PINSU,Consumer Defensive,Beverages - Non-Alcoholic
+PKART,Industrials,Business Equipment & Supplies
+PKENT,Consumer Cyclical,Resorts & Casinos
+PLTUR,Industrials,Rental & Leasing Services
+PNLSN,Industrials,Building Products & Equipment
+PNSUT,Consumer Defensive,Packaged Foods
+POLHO,Basic Materials,Specialty Chemicals
+POLTK,Basic Materials,Specialty Chemicals
+PRDGS,Financial Services,Asset Management
+PRKAB,Industrials,Electrical Equipment & Parts
+PRKME,Energy,Thermal Coal
+PRZMA,Industrials,Specialty Business Services
+PSDTC,Industrials,Conglomerates
+PSGYO,Real Estate,REIT - Diversified
+QUAGR,Industrials,Building Products & Equipment
+RALYH,Industrials,Engineering & Construction
+RAYSG,Financial Services,Insurance - Diversified
+REEDR,Technology,Consumer Electronics
+RNPOL,Basic Materials,Specialty Chemicals
+RODRG,Consumer Cyclical,Apparel Manufacturing
+RTALB,Healthcare,Biotechnology
+RUBNS,Consumer Cyclical,Textile Manufacturing
+RYGYO,Real Estate,REIT - Industrial
+RYSAS,Industrials,Integrated Freight & Logistics
+SAFKR,Consumer Cyclical,Auto Parts
+SAHOL,Financial Services,Banks - Regional
+SAMAT,Industrials,Specialty Business Services
+SANEL,Industrials,Electrical Equipment & Parts
+SANFM,Consumer Defensive,Household & Personal Products
+SANKO,Consumer Cyclical,Textile Manufacturing
+SARKY,Basic Materials,Copper
+SASA,Consumer Cyclical,Textile Manufacturing
+SAYAS,Industrials,Engineering & Construction
+SDTTR,Industrials,Aerospace & Defense
+SEGMN,Consumer Defensive,Packaged Foods
+SEGYO,Real Estate,REIT - Diversified
+SEKFK,Financial Services,Credit Services
+SEKUR,Consumer Cyclical,Packaging & Containers
+SELEC,Healthcare,Medical Distribution
+SELVA,Consumer Defensive,Packaged Foods
+SEYKM,Healthcare,Medical Instruments & Supplies
+SILVR,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+SISE,Industrials,Conglomerates
+SKBNK,Financial Services,Banks - Regional
+SKTAS,Consumer Cyclical,Textile Manufacturing
+SKYLP,Industrials,Consulting Services
+SKYMD,Financial Services,Capital Markets
+SMART,Technology,Software - Infrastructure
+SMRTG,Technology,Solar
+SNGYO,Real Estate,REIT - Residential
+SNICA,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+SNPAM,Consumer Cyclical,Textile Manufacturing
+SODSN,Basic Materials,Chemicals
+SOKE,Consumer Defensive,Packaged Foods
+SOKM,Consumer Cyclical,Department Stores
+SONME,Consumer Cyclical,Textile Manufacturing
+SRVGY,Real Estate,REIT - Diversified
+SUMAS,Basic Materials,Lumber & Wood Production
+SUNTK,Consumer Cyclical,Apparel Manufacturing
+SURGY,Real Estate,Real Estate - Development
+SUWEN,Consumer Cyclical,Apparel Manufacturing
+TABGD,Consumer Cyclical,Restaurants
+TARKM,Basic Materials,Agricultural Inputs
+TATEN,Utilities,Utilities - Renewable
+TATGD,Consumer Defensive,Packaged Foods
+TAVHL,Industrials,Airports & Air Services
+TBORG,Consumer Defensive,Beverages - Brewers
+TCELL,Communication Services,Telecom Services
+TDGYO,Real Estate,Real Estate - Diversified
+TEKTU,Consumer Cyclical,Lodging
+TERA,Financial Services,Capital Markets
+TEZOL,Basic Materials,Paper & Paper Products
+TGSAS,Industrials,Industrial Distribution
+THYAO,Industrials,Airlines
+TKFEN,Basic Materials,Agricultural Inputs
+TKNSA,Consumer Cyclical,Specialty Retail
+TLMAN,Industrials,Marine Shipping
+TMPOL,Basic Materials,Specialty Chemicals
+TMSN,Industrials,Farm & Heavy Construction Machinery
+TNZTP,Healthcare,Medical Care Facilities
+TOASO,Consumer Cyclical,Auto Manufacturers
+TRCAS,Utilities,Utilities - Independent Power Producers
+TRGYO,Real Estate,REIT - Diversified
+TRILC,Healthcare,Drug Manufacturers - Specialty & Generic
+TSGYO,Real Estate,REIT - Office
+TSKB,Financial Services,Banks - Regional
+TSPOR,Communication Services,Entertainment
+TTKOM,Communication Services,Telecom Services
+TTRAK,Industrials,Farm & Heavy Construction Machinery
+TUCLK,Industrials,Metal Fabrication
+TUKAS,Consumer Defensive,Packaged Foods
+TUPRS,Energy,Oil & Gas Refining & Marketing
+TUREX,Industrials,Railroads
+TURGG,Real Estate,Real Estate - Development
+TURSG,Financial Services,Insurance - Property & Casualty
+UFUK,Real Estate,Real Estate Services
+ULAS,Consumer Cyclical,Lodging
+ULKER,Consumer Defensive,Confectioners
+ULUFA,,
+ULUSE,Industrials,Electrical Equipment & Parts
+ULUUN,Consumer Defensive,Packaged Foods
+UMPAS,Financial Services,Asset Management
+UNLU,Financial Services,Capital Markets
+USAK,Industrials,Building Products & Equipment
+VAKBN,Financial Services,Banks - Regional
+VAKFN,Financial Services,Credit Services
+VAKKO,Consumer Cyclical,Apparel Manufacturing
+VANGD,Consumer Defensive,Food Distribution
+VBTYZ,Technology,Information Technology Services
+VERTU,Financial Services,Asset Management
+VERUS,Basic Materials,Specialty Chemicals
+VESBE,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+VESTL,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+VKFYO,Financial Services,Asset Management
+VKGYO,Real Estate,REIT - Diversified
+VKING,Consumer Defensive,Household & Personal Products
+VRGYO,Real Estate,REIT - Diversified
+YAPRK,Consumer Defensive,Farm Products
+YATAS,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+YAYLA,Industrials,Engineering & Construction
+YEOTK,Industrials,Engineering & Construction
+YESIL,Financial Services,Asset Management
+YGGYO,Real Estate,REIT - Retail
+YKBNK,Financial Services,Banks - Regional
+YKSLN,Basic Materials,Steel
+YONGA,Consumer Cyclical,"Furnishings, Fixtures & Appliances"
+YUNSA,Consumer Cyclical,Textile Manufacturing
+YYLGD,Consumer Defensive,Packaged Foods
+ZEDUR,Industrials,Conglomerates
+ZOREN,Utilities,Utilities - Renewable
+ZRGYO,Real Estate,REIT - Diversified
+A1CAP,Financial Services,Capital Markets
+A1YEN,Utilities,Utilities - Renewable
+AAGYO,Real Estate,Real Estate Services
+AHSGY,Real Estate,REIT - Diversified
+AKFIS,Industrials,Engineering & Construction
+AKHAN,Consumer Defensive,Packaged Foods
+ALBTN,Basic Materials,Building Materials
+ARFYE,Utilities,Utilities - Renewable
+ARMGD,Consumer Defensive,Packaged Foods
+ARTMS,Consumer Cyclical,Textile Manufacturing
+ATATR,Consumer Cyclical,Travel Services
+BAHKM,Basic Materials,Chemicals
+BALSU,Consumer Defensive,Packaged Foods
+BESLR,Consumer Defensive,Packaged Foods
+BESTE,Utilities,Utilities - Renewable
+BETAE,Industrials,Electrical Equipment & Parts
+BIGEN,Utilities,Utilities - Renewable
+BIGTK,Communication Services,Publishing
+BINBN,Technology,Information Technology Services
+BKRGY,Real Estate,REIT - Residential
+BLUME,Technology,Solar
+BULGS,Financial Services,Capital Markets
+CEMZY,Consumer Defensive,Farm Products
+CGCAM,Basic Materials,Building Materials
+CITAS,Consumer Defensive,Packaged Foods
+DCTTR,Financial Services,Capital Markets
+DOFRB,Consumer Cyclical,Leisure
+DSTKF,Financial Services,Credit Services
+DUNYH,Consumer Defensive,Packaged Foods
+DURKN,Consumer Defensive,Packaged Foods
+EBEBK,Consumer Cyclical,Specialty Retail
+ECOGR,Utilities,Utilities - Renewable
+EFOR,Consumer Defensive,Farm Products
+EKDMR,Basic Materials,Steel
+EKIM,Industrials,Staffing & Employment Services
+EMPAE,Technology,Electronics & Computer Distribution
+ENDAE,Utilities,Utilities - Renewable
+ENTRA,Utilities,Utilities - Renewable
+FRMPL,Basic Materials,Building Materials
+GENKM,Basic Materials,Specialty Chemicals
+GLRMK,Industrials,Engineering & Construction
+GOLDA,Consumer Defensive,Packaged Foods
+GRTHO,Consumer Defensive,Farm Products
+HOROZ,Industrials,Integrated Freight & Logistics
+HRKET,Industrials,Engineering & Construction
+INTET,Technology,Information Technology Services
+ISVEA,Basic Materials,Building Materials
+KARCL,Basic Materials,Steel
+KBORU,Basic Materials,Building Materials
+KLYPV,Technology,Solar
+KOCMT,Basic Materials,Steel
+KPEKS,Basic Materials,Chemicals
+KUVVA,Consumer Defensive,Food Distribution
+LRSHO,Industrials,Conglomerates
+LXGYO,Real Estate,REIT - Diversified
+LYDHO,Industrials,Conglomerates
+LYDYE,Utilities,Utilities - Renewable
+MARMR,Industrials,Conglomerates
+MASFN,Utilities,Utilities - Renewable
+MCARD,Technology,Software - Infrastructure
+MEGMT,Industrials,Electrical Equipment & Parts
+METEN,Utilities,Utilities - Renewable
+MEYSU,Consumer Defensive,Beverages - Non-Alcoholic
+MHRGY,Real Estate,REIT - Office
+MOGAN,Utilities,Utilities - Renewable
+MOPAS,Consumer Defensive,Packaged Foods
+NETCD,Technology,Software - Application
+NETGL,Industrials,Conglomerates
+ORZAX,Consumer Defensive,Packaged Foods
+OZATD,Industrials,Aerospace & Defense
+OZYSR,Industrials,Electrical Equipment & Parts
+PAHOL,Industrials,Conglomerates
+QUICK,Financial Services,Insurance - Diversified
+RGYAS,Real Estate,Real Estate - Development
+RUZYE,Energy,Thermal Coal
+SARAE,Industrials,Engineering & Construction
+SERNT,Basic Materials,Building Materials
+SMRVA,Financial Services,Asset Management
+SOHOE,Consumer Cyclical,Textile Manufacturing
+SSAAT,Consumer Cyclical,Luxury Goods
+SVGYO,Real Estate,Real Estate - Development
+TCKRC,Industrials,Metal Fabrication
+TEHOL,Real Estate,REIT - Diversified
+TKNKA,Consumer Cyclical,Packaging & Containers
+TRALT,Basic Materials,Gold
+TRENJ,Basic Materials,Gold
+TRMET,Basic Materials,Other Industrial Metals & Mining
+UCAYM,Industrials,Engineering & Construction
+USHOL,Financial Services,Asset Management
+VAKFA,Financial Services,Credit Services
+VEYAS,Utilities,Utilities - Regulated Electric
+VSNMD,Basic Materials,Building Materials
+YIGIT,Industrials,Electrical Equipment & Parts
+ZERGY,Real Estate,REIT - Residential
+ZGYO,Real Estate,REIT - Diversified
